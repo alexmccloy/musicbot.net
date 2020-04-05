@@ -4,7 +4,9 @@ using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Rest;
 using Discord.WebSocket;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using NLog;
 
@@ -13,40 +15,49 @@ namespace Amccloy.MusicBot.Net
     /// <summary>
     /// Connects to the discord server and acts as the interface for sending and receiving messages
     /// </summary>
-    public class DiscordService : IHostedService, IDiscordService
+    public class DiscordInterface : IDiscordInterface
     {
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
-        private DiscordSocketClient _discordClient;
-        private Subject<SocketMessage> _socketMessageSubject = new Subject<SocketMessage>();
+        private readonly DiscordSocketClient _discordClient;
+        private readonly Subject<SocketMessage> _socketMessageSubject = new Subject<SocketMessage>();
 
-        public DiscordService(DiscordSocketClient discordClient)
+        private readonly string _token;
+
+        public DiscordInterface(DiscordSocketClient discordClient,
+                              IConfiguration configuration)
         {
             _discordClient = discordClient;
+            _token = configuration["Discord:BotToken"];
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken)
+        public async Task Init()
         {
-            _logger.Info("Starting Discord Client Service");
+            _logger.Info("Starting Discord Client Interface");
             _discordClient.Log += HandleLogMessageAsync;
             _discordClient.Ready += HandleClientReadyAsync;
             _discordClient.MessageReceived += HandleMessageReceivedAsync;
+
+            await _discordClient.LoginAsync(TokenType.Bot, _token);
+            await _discordClient.StartAsync();
+            
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public async Task Stop()
         {
+            await _discordClient.StopAsync();
             _discordClient?.Dispose();
-            return Task.CompletedTask;
         }
         
         private Task HandleMessageReceivedAsync(SocketMessage message)
         {
+            // _logger.Debug($"Message recived: {message.Channel}-{message.Content}");
             _socketMessageSubject.OnNext(message);
             return Task.CompletedTask;
         }
 
         private Task HandleClientReadyAsync()
         {
-            _logger.Info("Discord client state is: ready");
+            _logger.Info($"{_discordClient.CurrentUser} is connected to server");
             return Task.CompletedTask;
         }
 
@@ -58,15 +69,15 @@ namespace Amccloy.MusicBot.Net
 
         public IObservable<SocketMessage> MessageReceived => _socketMessageSubject.AsObservable();
         
-        public async Task SendMessageAsync(string message, string channel)
+        public async Task SendMessageAsync(ISocketMessageChannel channel, string message)
         {
-            throw new NotImplementedException();
+            _logger.Debug($"Sending message {message} to channel {channel.Name}");
+            await channel.SendMessageAsync(message);
         }
-    }
 
-    public interface IDiscordService
-    {
-        public IObservable<SocketMessage> MessageReceived { get; }
-        public Task SendMessageAsync(string message, string channel);
+        public async Task SendMessageAsync(uint channelId, string message)
+        {
+            
+        }
     }
 }

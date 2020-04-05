@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -8,7 +9,7 @@ namespace Amccloy.MusicBot.Net
 {
     public static class HostExtensions
     {
-        public static IHostBuilder AddNLog2(this IHostBuilder hostBuilder)
+        public static IHostBuilder AddNLog(this IHostBuilder hostBuilder)
         {
             return hostBuilder.ConfigureServices((Action<IServiceCollection>) (services => services.AddLogging((Action<ILoggingBuilder>) (config =>
             {
@@ -21,6 +22,17 @@ namespace Amccloy.MusicBot.Net
                     
                 });
             }))));
-        } 
+        }
+
+        public static IHostBuilder ApplyConfig<T>(this IHostBuilder builder) where T : class
+        {
+            builder.ConfigureHostConfiguration(config =>
+            {
+                config.AddJsonFile("config.json", true)
+                      .AddEnvironmentVariables()
+                      .AddUserSecrets<T>();
+            });
+            return builder;
+        }
     }
 }
