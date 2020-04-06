@@ -11,26 +11,40 @@ using NLog;
 
 namespace Amccloy.MusicBot.Net.Commands
 {
+    /// <summary>
+    /// Hosted service responsible for processing commands from users. It determines which class should handle the
+    /// command and then passes the relevant details down.
+    /// </summary>
     public class CommandProcessingService : IHostedService
     {
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
         private readonly IDiscordInterface _discordInterface;
-        private IScheduler _scheduler;
+        private readonly IScheduler _scheduler;
 
         private IDisposable _subscription;
 
         private const string _commandPrefix = "!"; //TODO make this configurable
 
-        private Dictionary<string, IDiscordCommand> _commandDict;
+        private readonly Dictionary<string, BaseDiscordCommand> _commandDict;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="discordInterface">Interface to send and receive discord messages</param>
+        /// <param name="schedulerFactory">Generator for Reactive Schedulers</param>
         public CommandProcessingService(IDiscordInterface discordInterface, ISchedulerFactory schedulerFactory)
         {
             _discordInterface = discordInterface;
             _scheduler = schedulerFactory.GenerateScheduler();
             
-            _commandDict = new Dictionary<string, IDiscordCommand>();
+            _commandDict = new Dictionary<string, BaseDiscordCommand>();
         }
 
+        /// <summary>
+        /// Starts this service.
+        /// Registers all commands and instantiates a single instance of each Discord Command Processor
+        /// </summary>
+        /// <param name="cancellationToken">Token to stop this operation</param>
         public Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.Info("Starting Command Processing Service");
@@ -44,6 +58,9 @@ namespace Amccloy.MusicBot.Net.Commands
         }
 
 
+        /// <summary>
+        /// Stops this service from running
+        /// </summary>
         public Task StopAsync(CancellationToken cancellationToken)
         {
             _subscription?.Dispose();
@@ -60,11 +77,12 @@ namespace Amccloy.MusicBot.Net.Commands
             foreach (Type command in System.Reflection.Assembly
                                            .GetExecutingAssembly()
                                            .GetTypes()
-                                           .Where(type => type.GetInterfaces().Contains(typeof(IDiscordCommand))))
+                                           // .Where(type => type.GetInterfaces().Contains(typeof(BaseDiscordCommand)))
+                                           .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(BaseDiscordCommand))))
             {
                 try
                 {
-                    if (Activator.CreateInstance(command) is IDiscordCommand discordCommand)
+                    if (Activator.CreateInstance(command) is BaseDiscordCommand discordCommand)
                     {
                         _commandDict.Add(discordCommand.CommandString, discordCommand);
                     }
@@ -81,6 +99,11 @@ namespace Amccloy.MusicBot.Net.Commands
             }
         }
         
+        /// <summary>
+        /// Determines what command the user requested and executes that command.
+        /// If the command is unknown then prints help text instead
+        /// </summary>
+        /// <param name="message"></param>
         private async Task HandleCommand(SocketMessage message)
         {
             _logger.Debug($"Received command: {message.Content}");
@@ -91,6 +114,20 @@ namespace Amccloy.MusicBot.Net.Commands
             if (_commandDict.ContainsKey(command))
             {
                 await _commandDict[command].Execute(_discordInterface, args, message);
+            }
+            else if (command == "help")
+            {
+                // Expected help command:
+                // !help -> prints summary help text for each command
+                // !help command -> prints the full help text for that command
+                if (args.Length >= 2 && _commandDict.ContainsKey(args[1]))
+                {
+                    await _discordInterface.SendMessageAsync(message.Channel, _commandDict[args[1]].PrintFullHelpText());
+                }
+                else
+                {
+                    await _discordInterface.SendMessageAsync(message.Channel, String.Join('\n', _commandDict.Values.Select(x => x.PrintSummaryHelpText())));
+                }
             }
         }
     }

@@ -74,10 +74,5 @@ namespace Amccloy.MusicBot.Net
             _logger.Debug($"Sending message {message} to channel {channel.Name}");
             await channel.SendMessageAsync(message);
         }
-
-        public async Task SendMessageAsync(uint channelId, string message)
-        {
-            
-        }
     }
 }

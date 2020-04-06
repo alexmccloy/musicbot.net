@@ -1,0 +1,45 @@
+﻿using System.Threading.Tasks;
+using Discord.WebSocket;
+
+namespace Amccloy.MusicBot.Net.Commands
+{
+    public abstract class BaseDiscordCommand
+    {
+        /// <summary>
+        /// The string that should be typed to run this command
+        /// </summary>
+        public abstract string CommandString { get; }
+        
+        /// <summary>
+        /// A short (one line) summary of what this command does
+        /// </summary>
+        protected abstract string SummaryHelpText { get; }
+
+        /// <summary>
+        /// A detailed summary of what this command does and its possible arguments
+        /// </summary>
+        protected abstract string FullHelpText { get; }
+
+        /// <summary>
+        /// Gets the Summary help string that should be printed by the !help command
+        /// </summary>
+        public string PrintSummaryHelpText() => $"{CommandString}: {SummaryHelpText}";
+
+        /// <summary>
+        /// Gets the full help string that should be printed by the !help command
+        /// </summary>
+        public string PrintFullHelpText() => $"Command: {CommandString}\n" +
+                                             $"{FullHelpText}";
+
+        /// <summary>
+        /// Execute the discord command
+        /// </summary>
+        /// <param name="discordInterface"></param>
+        /// <param name="args"></param>
+        /// <param name="rawMessage"></param>
+        /// <returns></returns>
+        public abstract Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage rawMessage);
+        
+        
+    }
+}
