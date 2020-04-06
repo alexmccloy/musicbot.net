@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Threading;
 using System.Threading.Tasks;
 using Discord;
-using Discord.Rest;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using NLog;
 
-namespace Amccloy.MusicBot.Net
+namespace Amccloy.MusicBot.Net.Discord
 {
     /// <summary>
     /// Connects to the discord server and acts as the interface for sending and receiving messages

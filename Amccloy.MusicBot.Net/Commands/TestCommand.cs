@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
+using Amccloy.MusicBot.Net.Discord;
 using Discord.WebSocket;
 
 namespace Amccloy.MusicBot.Net.Commands

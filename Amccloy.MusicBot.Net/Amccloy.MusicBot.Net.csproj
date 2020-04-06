@@ -5,6 +5,7 @@
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <UserSecretsId>666EFC50-4DCA-4709-B4E2-98849CAEE1A7</UserSecretsId>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>

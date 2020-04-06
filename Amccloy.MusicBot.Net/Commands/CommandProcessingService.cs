@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Amccloy.MusicBot.Net.Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.Hosting;
 using NLog;
@@ -45,16 +46,14 @@ namespace Amccloy.MusicBot.Net.Commands
         /// Registers all commands and instantiates a single instance of each Discord Command Processor
         /// </summary>
         /// <param name="cancellationToken">Token to stop this operation</param>
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
             _logger.Info("Starting Command Processing Service");
-            RegisterCommands();
+            await RegisterCommands();
             _subscription = _discordInterface.MessageReceived
                                            .ObserveOn(_scheduler)
                                            .Where(message => message.Content.StartsWith(_commandPrefix))
                                            .Subscribe(async (message) => await HandleCommand(message));
-            
-            return Task.CompletedTask;
         }
 
 
@@ -72,18 +71,18 @@ namespace Amccloy.MusicBot.Net.Commands
         /// Finds every class that implements IDiscordCommand interface and instantiates it, then puts it in a dictionary
         /// with the command text as the key
         /// </summary>
-        private void RegisterCommands()
+        private async Task RegisterCommands()
         {
             foreach (Type command in System.Reflection.Assembly
                                            .GetExecutingAssembly()
                                            .GetTypes()
-                                           // .Where(type => type.GetInterfaces().Contains(typeof(BaseDiscordCommand)))
                                            .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(BaseDiscordCommand))))
             {
                 try
                 {
                     if (Activator.CreateInstance(command) is BaseDiscordCommand discordCommand)
                     {
+                        await discordCommand.Init();
                         _commandDict.Add(discordCommand.CommandString, discordCommand);
                     }
                     else
