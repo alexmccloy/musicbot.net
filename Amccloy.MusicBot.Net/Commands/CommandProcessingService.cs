@@ -20,6 +20,7 @@ namespace Amccloy.MusicBot.Net.Commands
     {
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
         private readonly IDiscordInterface _discordInterface;
+        private readonly ISchedulerFactory _schedulerFactory; //Required to pass down to dependent classes
         private readonly IScheduler _scheduler;
 
         private IDisposable _subscription;
@@ -36,6 +37,7 @@ namespace Amccloy.MusicBot.Net.Commands
         public CommandProcessingService(IDiscordInterface discordInterface, ISchedulerFactory schedulerFactory)
         {
             _discordInterface = discordInterface;
+            _schedulerFactory = schedulerFactory;
             _scheduler = schedulerFactory.GenerateScheduler();
             
             _commandDict = new Dictionary<string, BaseDiscordCommand>();
@@ -80,7 +82,7 @@ namespace Amccloy.MusicBot.Net.Commands
             {
                 try
                 {
-                    if (Activator.CreateInstance(command) is BaseDiscordCommand discordCommand)
+                    if (Activator.CreateInstance(command, _schedulerFactory) is BaseDiscordCommand discordCommand)
                     {
                         await discordCommand.Init();
                         _commandDict.Add(discordCommand.CommandString, discordCommand);

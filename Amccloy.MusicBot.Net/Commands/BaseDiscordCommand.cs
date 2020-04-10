@@ -9,6 +9,13 @@ namespace Amccloy.MusicBot.Net.Commands
     /// </summary>
     public abstract class BaseDiscordCommand
     {
+        protected readonly ISchedulerFactory SchedulerFactory;
+
+        protected BaseDiscordCommand(ISchedulerFactory schedulerFactory)
+        {
+            SchedulerFactory = schedulerFactory;
+        }
+
         /// <summary>
         /// The string that should be typed to run this command
         /// </summary>

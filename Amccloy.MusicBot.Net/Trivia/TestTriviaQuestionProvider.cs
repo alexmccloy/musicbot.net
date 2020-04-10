@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Amccloy.MusicBot.Net.Trivia
@@ -15,6 +16,8 @@ namespace Amccloy.MusicBot.Net.Trivia
 
         public string Name => "Test";
         public string Description => "This is a test trivia source";
+        
+        public TimeSpan QuestionDuration => TimeSpan.FromSeconds(30);
 
         public TestTriviaQuestionProvider(ISchedulerFactory schedulerFactoryFactory)
         {
@@ -33,6 +36,6 @@ namespace Amccloy.MusicBot.Net.Trivia
         }
 
         private ITriviaQuestion GenerateStandardTriviaQuestion() => 
-            new StandardTriviaQuestion($"Question {_count}", $"Answer {_count++}", _schedulerFactory);
+            new StandardTriviaQuestion($"This is the text for question {++_count}", $"Answer {_count}", _schedulerFactory);
     }
 }

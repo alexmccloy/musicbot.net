@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Discord.WebSocket;
 
 namespace Amccloy.MusicBot.Net.Commands
 {
@@ -35,7 +39,64 @@ namespace Amccloy.MusicBot.Net.Commands
         /// <param name="other"></param>
         public void CombineWith(GameResults other)
         {
+            foreach (var score in other.Scores)
+            {
+                if (Scores.ContainsKey(score.Key))
+                {
+                    Scores[score.Key] += score.Value;
+                }
+                else
+                {
+                    Scores.Add(score.Key, score.Value);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns a string representation of this score to be displayed to the users
+        /// </summary>
+        public string PrintScores()
+        {
+            if (Scores.Count == 0)
+            {
+                return "No one has any points!";
+            }
             
+            var sb = new StringBuilder();
+            foreach (var pair in Scores.OrderByDescending(x => x.Value))
+            {
+                sb.AppendLine($"{pair.Key} - {pair.Value}");
+            }
+
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// Gets the winner or winners. This text will be displayed directly to the user
+        /// TODO this is not working and prints everyones score somehow
+        /// </summary>
+        public string GetWinner()
+        {
+            if (Scores.Count == 0)
+            {
+                return "No one wins!";
+            }
+
+            var winners = new List<string>();
+            int topScore = Int32.MinValue;
+            foreach (var score in Scores.OrderByDescending(x => x.Value))
+            {
+                if (score.Value >= topScore)
+                {
+                    winners.Add(score.Key);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            return String.Join(", ", winners);
         }
     }
 }

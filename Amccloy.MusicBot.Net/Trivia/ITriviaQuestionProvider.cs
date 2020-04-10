@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Amccloy.MusicBot.Net.Trivia
@@ -24,6 +25,11 @@ namespace Amccloy.MusicBot.Net.Trivia
         /// The description for the provider, this will also be displayed to the user
         /// </summary>
         string Description { get; }
+        
+        /// <summary>
+        /// How long each question should last for
+        /// </summary>
+        TimeSpan QuestionDuration { get; } 
         
         /// <summary>
         /// Get the next <see cref="count"/> number of questions.

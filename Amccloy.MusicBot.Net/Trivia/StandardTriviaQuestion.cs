@@ -67,6 +67,8 @@ namespace Amccloy.MusicBot.Net.Trivia
             bool phase1 = true; // When this is true the round ends when the first person gets the question right,
                                 // when it is false we are in the 1 second grace period
 
+            await waitHandle.WaitAsync(); // Take the wait handle and wait for the observable to release it
+            
             // Subscribe to incoming answers from users
             _subscription = chat.ObserveOn(_scheduler).Subscribe(message =>
             {
