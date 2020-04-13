@@ -66,7 +66,7 @@ namespace Amccloy.MusicBot.Net.Commands
             var gameResult = new GameResults();
 
             // Start asking questions
-            var questions = questionProvider.GetQuestions(gameLength); //TODO this might need to be async
+            var questions = await questionProvider.GetQuestions(gameLength); //TODO this might need to be async
             for (int i =0; i< questions.Count; i++)
             {
                 await discordInterface.SendMessageAsync(rawMessage.Channel, $"Question {i + 1}:\n{questions[i].Question}");

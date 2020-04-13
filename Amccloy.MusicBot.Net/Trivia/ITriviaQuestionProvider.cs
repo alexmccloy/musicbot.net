@@ -35,6 +35,6 @@ namespace Amccloy.MusicBot.Net.Trivia
         /// Get the next <see cref="count"/> number of questions.
         /// TODO decide what to do if there arent that many available
         /// </summary>
-        List<ITriviaQuestion> GetQuestions(int count);
+        Task<List<ITriviaQuestion>> GetQuestions(int count);
     }
 }

@@ -3,6 +3,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
 using Discord;
+using Discord.Net;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
 using NLog;
@@ -68,8 +69,15 @@ namespace Amccloy.MusicBot.Net.Discord
         
         public async Task SendMessageAsync(ISocketMessageChannel channel, string message)
         {
-            _logger.Debug($"Sending message {message} to channel {channel.Name}");
-            await channel.SendMessageAsync(message);
+            try
+            {
+                _logger.Debug($"Sending message {message} to channel {channel.Name}");
+                await channel.SendMessageAsync(message);
+            }
+            catch (HttpException exception)
+            {
+                _logger.Error(exception, $"Error occured while trying to send message: {exception.Message}");
+            }
         }
     }
 }

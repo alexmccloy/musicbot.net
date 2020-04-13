@@ -24,7 +24,7 @@ namespace Amccloy.MusicBot.Net.Trivia
             _schedulerFactory = schedulerFactoryFactory;
         }
 
-        public List<ITriviaQuestion> GetQuestions(int count)
+        public Task<List<ITriviaQuestion>> GetQuestions(int count)
         {
             var questions = new List<ITriviaQuestion>();
             for (int i = 0; i < count; i++)
@@ -32,7 +32,7 @@ namespace Amccloy.MusicBot.Net.Trivia
                 questions.Add(GenerateStandardTriviaQuestion());
             }
 
-            return questions;
+            return Task.FromResult(questions);
         }
 
         private ITriviaQuestion GenerateStandardTriviaQuestion() => 

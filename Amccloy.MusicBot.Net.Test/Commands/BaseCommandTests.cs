@@ -1,7 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shouldly;
 
-namespace Amccloy.MusicBot.Net.Test
+namespace Amccloy.MusicBot.Net.Test.Commands
 {
     [TestClass]
     public class BaseCommandTests
@@ -9,7 +9,7 @@ namespace Amccloy.MusicBot.Net.Test
         [TestMethod]
         public void GenerateSummaryHelpString()
         {
-            var cmd = new DummyCommand();
+            var cmd = new DummyCommand(new DummySchedulerFactory());
             var helpText = cmd.PrintSummaryHelpText();
             helpText.ShouldBe($"{DummyCommand.Command}: {DummyCommand.SummaryHelp}");
         }
@@ -18,7 +18,7 @@ namespace Amccloy.MusicBot.Net.Test
         [TestMethod]
         public void GenerateFullHelpString()
         {
-            var cmd = new DummyCommand();
+            var cmd = new DummyCommand(new DummySchedulerFactory());
             var helpText = cmd.PrintFullHelpText();
             helpText.ShouldBe($"Command: {DummyCommand.Command}\n{DummyCommand.FullHelp}");
         }
