@@ -1,10 +1,21 @@
 ﻿using System.Threading.Tasks;
+using Amccloy.MusicBot.Net.Discord;
 using Discord.WebSocket;
 
 namespace Amccloy.MusicBot.Net.Commands
 {
+    /// <summary>
+    /// The base class for a command that the user will type into discord
+    /// </summary>
     public abstract class BaseDiscordCommand
     {
+        protected readonly ISchedulerFactory SchedulerFactory;
+
+        protected BaseDiscordCommand(ISchedulerFactory schedulerFactory)
+        {
+            SchedulerFactory = schedulerFactory;
+        }
+
         /// <summary>
         /// The string that should be typed to run this command
         /// </summary>
@@ -39,7 +50,10 @@ namespace Amccloy.MusicBot.Net.Commands
         /// <param name="rawMessage"></param>
         /// <returns></returns>
         public abstract Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage rawMessage);
-        
-        
+
+        /// <summary>
+        /// Perform any initialisation required here
+        /// </summary>
+        public virtual Task Init() => Task.CompletedTask;
     }
 }

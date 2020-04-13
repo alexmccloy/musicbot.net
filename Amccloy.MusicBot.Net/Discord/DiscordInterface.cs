@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using System.Threading;
 using System.Threading.Tasks;
 using Discord;
-using Discord.Rest;
+using Discord.Net;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using NLog;
 
-namespace Amccloy.MusicBot.Net
+namespace Amccloy.MusicBot.Net.Discord
 {
     /// <summary>
     /// Connects to the discord server and acts as the interface for sending and receiving messages
@@ -71,8 +69,15 @@ namespace Amccloy.MusicBot.Net
         
         public async Task SendMessageAsync(ISocketMessageChannel channel, string message)
         {
-            _logger.Debug($"Sending message {message} to channel {channel.Name}");
-            await channel.SendMessageAsync(message);
+            try
+            {
+                _logger.Debug($"Sending message {message} to channel {channel.Name}");
+                await channel.SendMessageAsync(message);
+            }
+            catch (HttpException exception)
+            {
+                _logger.Error(exception, $"Error occured while trying to send message: {exception.Message}");
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
+using Amccloy.MusicBot.Net.Discord;
 using Discord.WebSocket;
 
 namespace Amccloy.MusicBot.Net.Commands
@@ -14,6 +15,11 @@ namespace Amccloy.MusicBot.Net.Commands
                                       "It will reply with the details of the person that ran it, and all the arguments " +
                                       "it received.";
 
+        public TestCommand(ISchedulerFactory schedulerFactory)
+            : base(schedulerFactory)
+        {
+        }
+        
         public override async Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage rawMessage)
         {
             var response = new StringBuilder();
@@ -29,5 +35,6 @@ namespace Amccloy.MusicBot.Net.Commands
             
             await discordInterface.SendMessageAsync(rawMessage.Channel, response.ToString());
         }
+
     }
 }
