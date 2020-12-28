@@ -1,0 +1,79 @@
+﻿@page "/ApiKey"
+
+@using DataAccessLibrary
+@using DataAccessLibrary.Models
+@using Amccloy.MusicBot.Asp.Net.Models
+
+@inject IDiscordApiTokenData _db
+
+<h3>Discord ApiKey</h3>
+
+TODO: Add info here about how to find your api key
+
+<h4>Add new Api Key</h4>
+<p>Use the same servername to overwrite a key</p>
+<EditForm Model="@newToken" OnValidSubmit="@InsertToken">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    
+    <InputText id="Server Name" @bind-Value="newToken.ServerName" />
+    <InputText id="Api Key" @bind-Value="newToken.ApiKey" />
+    
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+<h4>Current API Keys</h4>
+@if (tokens is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    if (tokens.Count == 0)
+    {
+        <p><em>You have no Api Keys configured, add some!</em></p>
+    }
+    else
+    {
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Server Name</th>
+                <th>Api Key</th>
+            </tr>
+            </thead>
+            <tbody>
+                @foreach (var token in tokens)
+                {
+                    <tr>
+                        <th>@token.ServerName</th>
+                        <th>@token.ApiKey</th>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+}
+
+@code {
+    private List<DiscordApiToken> tokens;
+    private DiscordApiKeyModel newToken = new DiscordApiKeyModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // tokens = await _db.GetAllKeys();
+    }
+
+    private async Task InsertToken()
+    {
+        await _db.InsertApiKey(new DiscordApiToken()
+        {
+            ApiKey = newToken.ApiKey,
+            ServerName = newToken.ServerName
+        });
+
+        // tokens = await _db.GetAllKeys();
+        newToken = new DiscordApiKeyModel();
+    }
+
+}
