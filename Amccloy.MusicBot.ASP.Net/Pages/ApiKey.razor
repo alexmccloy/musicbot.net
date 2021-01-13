@@ -61,7 +61,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        // tokens = await _db.GetAllKeys();
+        tokens = await _db.GetAllKeys();
     }
 
     private async Task InsertToken()
@@ -72,7 +72,7 @@ else
             ServerName = newToken.ServerName
         });
 
-        // tokens = await _db.GetAllKeys();
+        tokens = await _db.GetAllKeys();
         newToken = new DiscordApiKeyModel();
     }
 

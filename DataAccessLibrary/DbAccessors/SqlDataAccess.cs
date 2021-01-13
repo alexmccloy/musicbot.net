@@ -4,8 +4,8 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
-using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
+using System.Data.SQLite;
 
 namespace DataAccessLibrary
 {
@@ -23,7 +23,7 @@ namespace DataAccessLibrary
         {
             string connectionString = _config.GetConnectionString(ConnectionStringName);
 
-            using (IDbConnection connection = new SqliteConnection(connectionString))
+            using (IDbConnection connection = new SQLiteConnection(connectionString))
             {
                 var data = await connection.QueryAsync<T>(sql, parameters);
                 return data.ToList();
@@ -34,7 +34,7 @@ namespace DataAccessLibrary
         {
             string connectionString = _config.GetConnectionString(ConnectionStringName);
 
-            using (IDbConnection connection = new SqliteConnection(connectionString))
+            using (IDbConnection connection = new SQLiteConnection(connectionString))
             {
                 await connection.ExecuteAsync(sql, parameters);
             }
@@ -44,7 +44,7 @@ namespace DataAccessLibrary
         {
             string connectionString = _config.GetConnectionString(ConnectionStringName);
 
-            using (IDbConnection connection = new SqliteConnection(connectionString))
+            using (IDbConnection connection = new SQLiteConnection(connectionString, parseViaFramework:true))
             {
                 connection.Open();
                 await connection.ExecuteAsync(sql);

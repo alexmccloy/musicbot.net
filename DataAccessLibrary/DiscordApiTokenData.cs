@@ -28,7 +28,7 @@ namespace DataAccessLibrary
 
         public Task<List<DiscordApiToken>> GetAllKeys()
         {
-            string sql = "select * from DisordApiKey";
+            string sql = "select * from DiscordApiKey";
             return _db.LoadData<DiscordApiToken, dynamic>(sql, new { });
         }
 
