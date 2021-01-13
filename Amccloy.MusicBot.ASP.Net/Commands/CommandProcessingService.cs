@@ -124,7 +124,7 @@ namespace Amccloy.MusicBot.Asp.Net.Commands
 
             if (_commandDict.ContainsKey(command))
             {
-                await _commandDict[command].Execute(_discordInterface, args, message);
+                await _commandDict[command].ExecuteCommand(_discordInterface, args, message);
             }
             else if (command == "help")
             {

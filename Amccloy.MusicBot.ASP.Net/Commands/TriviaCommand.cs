@@ -47,7 +47,7 @@ namespace Amccloy.MusicBot.Asp.Net.Commands
         /// <param name="discordInterface"></param>
         /// <param name="args"></param>
         /// <param name="rawMessage"></param>
-        public override async Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage rawMessage)
+        protected override async Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage rawMessage)
         {
             if (!TryExtractArgs(args, out var questionProvider, out var gameLength))
             {

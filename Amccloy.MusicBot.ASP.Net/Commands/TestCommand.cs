@@ -20,8 +20,8 @@ namespace Amccloy.MusicBot.Asp.Net.Commands
             : base(schedulerFactory)
         {
         }
-        
-        public override async Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage rawMessage)
+
+        protected override async Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage rawMessage)
         {
             var response = new StringBuilder();
 

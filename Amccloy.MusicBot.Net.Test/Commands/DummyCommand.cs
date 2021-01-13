@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Amccloy.MusicBot.Net.Commands;
-using Amccloy.MusicBot.Net.Discord;
+using Amccloy.MusicBot.Asp.Net.Commands;
+using Amccloy.MusicBot.Asp.Net.Discord;
+using Amccloy.MusicBot.Asp.Net.Utils.RX;
 using Discord.WebSocket;
 
 namespace Amccloy.MusicBot.Net.Test.Commands
@@ -22,7 +23,7 @@ namespace Amccloy.MusicBot.Net.Test.Commands
         {
         }
 
-        public override Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage rawMessage)
+        protected override Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage rawMessage)
         {
             ExecuteCount++;
             return Task.CompletedTask;

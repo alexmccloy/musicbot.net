@@ -9,7 +9,7 @@ namespace Amccloy.MusicBot.Net.Test.Commands
         [TestMethod]
         public void GenerateSummaryHelpString()
         {
-            var cmd = new DummyCommand(new DummySchedulerFactory());
+            var cmd = new DummyCommand(new TestSchedulerFactory());
             var helpText = cmd.PrintSummaryHelpText();
             helpText.ShouldBe($"{DummyCommand.Command}: {DummyCommand.SummaryHelp}");
         }
@@ -18,7 +18,7 @@ namespace Amccloy.MusicBot.Net.Test.Commands
         [TestMethod]
         public void GenerateFullHelpString()
         {
-            var cmd = new DummyCommand(new DummySchedulerFactory());
+            var cmd = new DummyCommand(new TestSchedulerFactory());
             var helpText = cmd.PrintFullHelpText();
             helpText.ShouldBe($"Command: {DummyCommand.Command}\n{DummyCommand.FullHelp}");
         }
