@@ -2,14 +2,12 @@
 using System.Threading.Tasks;
 using Discord.WebSocket;
 
-namespace Amccloy.MusicBot.Net.Discord
+namespace Amccloy.MusicBot.Asp.Net.Discord
 {
     public interface IDiscordInterface
     {
         public IObservable<SocketMessage> MessageReceived { get; }
         public Task SendMessageAsync(ISocketMessageChannel channel, string message);
 
-        Task Init();
-        Task Stop();
     }
 }

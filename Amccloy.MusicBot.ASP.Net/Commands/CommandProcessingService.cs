@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Amccloy.MusicBot.Asp.Net.Discord;
 using Amccloy.MusicBot.Net.Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.Hosting;
@@ -52,10 +53,18 @@ namespace Amccloy.MusicBot.Net.Commands
         {
             _logger.Info("Starting Command Processing Service");
             await RegisterCommands();
+            
+            _logger.Info("Subscribing to incoming messages");
             _subscription = _discordInterface.MessageReceived
                                            .ObserveOn(_scheduler)
                                            .Where(message => message.Content.StartsWith(_commandPrefix))
-                                           .Subscribe(async (message) => await HandleCommand(message));
+                                           .Subscribe(async message => await HandleCommand(message));
+
+            _discordInterface.MessageReceived.ObserveOn(_scheduler)
+                             .Subscribe(async message =>
+                             {
+                                 _logger.Debug($"Got message {message.Content}");
+                             });
         }
 
 
@@ -86,6 +95,7 @@ namespace Amccloy.MusicBot.Net.Commands
                     {
                         await discordCommand.Init();
                         _commandDict.Add(discordCommand.CommandString, discordCommand);
+                        _logger.Info($"Added command: {discordCommand.CommandString}");
                     }
                     else
                     {

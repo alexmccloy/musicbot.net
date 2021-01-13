@@ -1,22 +1,17 @@
 using Amccloy.MusicBot.Asp.Net.Areas.Identity;
 using Amccloy.MusicBot.Asp.Net.Data;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Amccloy.MusicBot.Asp.Net.Discord;
+using Amccloy.MusicBot.Net;
 using DataAccessLibrary;
-using DataAccessLibrary.Models;
+using Discord.WebSocket;
 
 namespace Amccloy.MusicBot.Asp.Net
 {
@@ -44,11 +39,19 @@ namespace Amccloy.MusicBot.Asp.Net
             services.AddDatabaseDeveloperPageExceptionFilter();
             services.AddSingleton<WeatherForecastService>();
             
+            //General stuff
+            services.AddSingleton<ISchedulerFactory, DefaultSchedulerFactory>();
+            
             //Database stuff
             services.AddHostedService<DbInitialiser>();
             services.AddTransient<ISqlDataAccess, SqlDataAccess>();
             services.AddTransient<IPeopleData_SAMPLE, PeopleData_SAMPLE>();
             services.AddTransient<IDiscordApiTokenData, DiscordApiTokenData>();
+            
+            //Discord stuff
+            services.AddHostedService<DiscordConnectionManager>();
+            services.AddTransient<DiscordSocketClient>();
+            services.AddSingleton<IDiscordInterface, DiscordInterface>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

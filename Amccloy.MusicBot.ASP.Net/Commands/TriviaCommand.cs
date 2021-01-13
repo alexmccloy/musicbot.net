@@ -6,6 +6,7 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
+using Amccloy.MusicBot.Asp.Net.Discord;
 using Amccloy.MusicBot.Net.Discord;
 using Amccloy.MusicBot.Net.Trivia;
 using Discord.WebSocket;

@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
+using Amccloy.MusicBot.Asp.Net.Discord;
 using Amccloy.MusicBot.Net.Discord;
 using Discord.WebSocket;
 
