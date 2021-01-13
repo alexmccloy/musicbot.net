@@ -1,4 +1,4 @@
-﻿namespace Amccloy.MusicBot.Net.Commands
+﻿namespace Amccloy.MusicBot.Asp.Net.Trivia
 {
     public enum TriviaQuestionType
     {

@@ -1,17 +1,17 @@
-﻿using System.Reactive.Concurrency;
-using System.Reactive.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Amccloy.MusicBot.Asp.Net.Discord;
-using Amccloy.MusicBot.Net.Discord;
+using Amccloy.MusicBot.Asp.Net.Utils.RX;
 using Discord.WebSocket;
 using Microsoft.Extensions.Hosting;
 using NLog;
 
-namespace Amccloy.MusicBot.Net.Commands
+namespace Amccloy.MusicBot.Asp.Net.Commands
 {
     /// <summary>
     /// Hosted service responsible for processing commands from users. It determines which class should handle the

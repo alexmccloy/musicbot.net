@@ -2,7 +2,6 @@
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
-using Amccloy.MusicBot.Net.Discord;
 using Discord.Net;
 using Discord.WebSocket;
 using NLog;
@@ -14,15 +13,18 @@ namespace Amccloy.MusicBot.Asp.Net.Discord
     /// </summary>
     public class DiscordInterface : IDiscordInterface
     {
+        public DiscordSocketClient RawClient { get; }
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
         private readonly Subject<SocketMessage> _socketMessageSubject = new();
 
         /// <summary>
         /// Please pass me an already started discord client
         /// </summary>
-        /// <param name="discordClient">The discord client. It should be already started and logged in</param>
+        /// <param name="discordClient">The discord client. It should be already started and logged in
+        /// </param>
         public DiscordInterface(DiscordSocketClient discordClient)
         {
+            RawClient = discordClient;
             discordClient.MessageReceived += message =>
             {
                 _socketMessageSubject.OnNext(message);

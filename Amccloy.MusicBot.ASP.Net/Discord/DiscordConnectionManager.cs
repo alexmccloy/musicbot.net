@@ -6,9 +6,8 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
-using Amccloy.MusicBot.Net;
-using Amccloy.MusicBot.Net.Commands;
-using Amccloy.MusicBot.Net.Discord;
+using Amccloy.MusicBot.Asp.Net.Commands;
+using Amccloy.MusicBot.Asp.Net.Utils.RX;
 using DataAccessLibrary;
 using Discord;
 using Discord.WebSocket;
@@ -22,16 +21,15 @@ namespace Amccloy.MusicBot.Asp.Net.Discord
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
         
         //TODO eventually turn these into a list
-        private readonly DiscordSocketClient _discordSocketClient;
+        private DiscordSocketClient _discordSocketClient;
         private IDiscordInterface _discordInterface; 
         CommandProcessingService _commandProcessingService;
                 
         private readonly IDiscordApiTokenData _apiTokenData;
         private readonly ISchedulerFactory _schedulerFactory;
 
-        public DiscordConnectionManager(DiscordSocketClient discordSocketClient, IDiscordApiTokenData apiTokenData, ISchedulerFactory schedulerFactory)
+        public DiscordConnectionManager(IDiscordApiTokenData apiTokenData, ISchedulerFactory schedulerFactory)
         {
-            _discordSocketClient = discordSocketClient;
             _apiTokenData = apiTokenData;
             _schedulerFactory = schedulerFactory;
         }
@@ -42,6 +40,19 @@ namespace Amccloy.MusicBot.Asp.Net.Discord
             {
                 _logger.Info($"Setting up discord client for Server {token.ServerName}");
 
+                _discordSocketClient = new DiscordSocketClient(new DiscordSocketConfig
+                {
+                    MessageCacheSize = 0,
+                    ExclusiveBulkDelete = true,
+                    AlwaysDownloadUsers = true,
+
+                    GatewayIntents = 
+                        GatewayIntents.Guilds |
+                        GatewayIntents.GuildMembers |
+                        GatewayIntents.GuildMessageReactions | 
+                        GatewayIntents.GuildMessages | 
+                        GatewayIntents.GuildVoiceStates
+                });
 
                 _discordSocketClient.Log += message =>
                 {
@@ -60,7 +71,14 @@ namespace Amccloy.MusicBot.Asp.Net.Discord
                     _logger.Info($"Discord client for {token.ServerName} is ready");
                     return Task.CompletedTask;
                 };
+
+                _discordSocketClient.Disconnected += exception =>
+                {
+                    _logger.Error($"Discord Client disconnected: {exception.Message}");
+                    return Task.CompletedTask;
+                };
                 //TODO handle disconnected event and try to reconnect
+                
 
                 await _discordSocketClient.LoginAsync(TokenType.Bot, token.ApiKey);
                 await _discordSocketClient.StartAsync();

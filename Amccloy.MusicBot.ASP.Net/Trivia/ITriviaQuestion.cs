@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Amccloy.MusicBot.Net.Commands;
-using Amccloy.MusicBot.Net.Discord;
+using Amccloy.MusicBot.Asp.Net.Discord;
 
-namespace Amccloy.MusicBot.Net.Trivia
+namespace Amccloy.MusicBot.Asp.Net.Trivia
 {
     /// <summary>
     /// Represents a single trivia question

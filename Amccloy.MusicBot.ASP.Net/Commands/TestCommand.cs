@@ -1,10 +1,10 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
 using Amccloy.MusicBot.Asp.Net.Discord;
-using Amccloy.MusicBot.Net.Discord;
+using Amccloy.MusicBot.Asp.Net.Utils.RX;
 using Discord.WebSocket;
 
-namespace Amccloy.MusicBot.Net.Commands
+namespace Amccloy.MusicBot.Asp.Net.Commands
 {
     public class TestCommand : BaseDiscordCommand
     {

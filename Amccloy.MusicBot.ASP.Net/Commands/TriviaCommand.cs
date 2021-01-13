@@ -7,12 +7,12 @@ using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 using Amccloy.MusicBot.Asp.Net.Discord;
-using Amccloy.MusicBot.Net.Discord;
-using Amccloy.MusicBot.Net.Trivia;
+using Amccloy.MusicBot.Asp.Net.Trivia;
+using Amccloy.MusicBot.Asp.Net.Utils.RX;
 using Discord.WebSocket;
 using NLog;
 
-namespace Amccloy.MusicBot.Net.Commands
+namespace Amccloy.MusicBot.Asp.Net.Commands
 {
     /// <summary>
     /// Command for playing an interactive game of trivia

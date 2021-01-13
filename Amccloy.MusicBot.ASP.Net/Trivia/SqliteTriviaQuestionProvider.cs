@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Threading.Tasks;
+using Amccloy.MusicBot.Asp.Net.Utils.RX;
 using NLog;
 
-namespace Amccloy.MusicBot.Net.Trivia
+namespace Amccloy.MusicBot.Asp.Net.Trivia
 {
     /// <summary>
     /// TODO make this a base provider with 1 provider per table

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Amccloy.MusicBot.Net.Trivia
+namespace Amccloy.MusicBot.Asp.Net.Trivia
 {
     /// <summary>
     /// Source of trivia questions, eg a Web API or Excel file. The trivia runner will use this to source questions

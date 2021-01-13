@@ -1,6 +1,6 @@
 ﻿using System.Reactive.Concurrency;
 
-namespace Amccloy.MusicBot.Net
+namespace Amccloy.MusicBot.Asp.Net.Utils.RX
 {
     public interface ISchedulerFactory
     {

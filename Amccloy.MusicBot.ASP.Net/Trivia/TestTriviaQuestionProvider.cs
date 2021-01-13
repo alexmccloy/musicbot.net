@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Amccloy.MusicBot.Asp.Net.Utils.RX;
 
-namespace Amccloy.MusicBot.Net.Trivia
+namespace Amccloy.MusicBot.Asp.Net.Trivia
 {
     /// <summary>
     /// An implementation of a trivia question provider that only returns static text based on the question number

@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
-using Amccloy.MusicBot.Net.Commands;
-using Amccloy.MusicBot.Net.Discord;
+using Amccloy.MusicBot.Asp.Net.Discord;
+using Amccloy.MusicBot.Asp.Net.Utils.RX;
 
-namespace Amccloy.MusicBot.Net.Trivia
+namespace Amccloy.MusicBot.Asp.Net.Trivia
 {
     /// <summary>
     /// Represents a trivia question with a single question and single text based answer.

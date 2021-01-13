@@ -1,6 +1,6 @@
 ﻿using Discord.WebSocket;
 
-namespace Amccloy.MusicBot.Net.Discord
+namespace Amccloy.MusicBot.Asp.Net.Discord
 {
     /// <summary>
     /// Internal representation of a text message in the discord chat

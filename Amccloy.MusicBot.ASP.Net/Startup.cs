@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Amccloy.MusicBot.Asp.Net.Discord;
-using Amccloy.MusicBot.Net;
+using Amccloy.MusicBot.Asp.Net.Utils.RX;
 using DataAccessLibrary;
 using Discord.WebSocket;
 

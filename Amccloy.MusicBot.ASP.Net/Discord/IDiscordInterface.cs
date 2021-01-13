@@ -9,5 +9,6 @@ namespace Amccloy.MusicBot.Asp.Net.Discord
         public IObservable<SocketMessage> MessageReceived { get; }
         public Task SendMessageAsync(ISocketMessageChannel channel, string message);
 
+        public DiscordSocketClient RawClient { get; }
     }
 }

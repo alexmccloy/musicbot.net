@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Discord.WebSocket;
 
-namespace Amccloy.MusicBot.Net.Commands
+namespace Amccloy.MusicBot.Asp.Net.Trivia
 {
     /// <summary>
     /// The result from a single trivia question
