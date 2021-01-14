@@ -3,8 +3,9 @@
 @using DataAccessLibrary
 @using DataAccessLibrary.Models
 @using Amccloy.MusicBot.Asp.Net.Models
+@using DataAccessLibrary.DiscordApiToken
 
-@inject IDiscordApiTokenData _db
+@inject IDiscordApiTokenData TokenDatabase
 
 <h3>Discord ApiKey</h3>
 
@@ -12,24 +13,24 @@ TODO: Add info here about how to find your api key
 
 <h4>Add new Api Key</h4>
 <p>Use the same servername to overwrite a key</p>
-<EditForm Model="@newToken" OnValidSubmit="@InsertToken">
+<EditForm Model="@_newToken" OnValidSubmit="@InsertToken">
     <DataAnnotationsValidator />
     <ValidationSummary />
     
-    <InputText id="Server Name" @bind-Value="newToken.ServerName" />
-    <InputText id="Api Key" @bind-Value="newToken.ApiKey" />
+    <InputText id="Server Name" @bind-Value="_newToken.ServerName" />
+    <InputText id="Api Key" @bind-Value="_newToken.ApiKey" />
     
     <button type="submit" class="btn btn-primary">Submit</button>
 </EditForm>
 
 <h4>Current API Keys</h4>
-@if (tokens is null)
+@if (_tokens is null)
 {
     <p><em>Loading...</em></p>
 }
 else
 {
-    if (tokens.Count == 0)
+    if (!_tokens.Any())
     {
         <p><em>You have no Api Keys configured, add some!</em></p>
     }
@@ -43,7 +44,7 @@ else
             </tr>
             </thead>
             <tbody>
-                @foreach (var token in tokens)
+                @foreach (var token in _tokens)
                 {
                     <tr>
                         <th>@token.ServerName</th>
@@ -56,24 +57,24 @@ else
 }
 
 @code {
-    private List<DiscordApiToken> tokens;
-    private DiscordApiKeyModel newToken = new DiscordApiKeyModel();
+    private IEnumerable<DiscordApiToken> _tokens;
+    private DiscordApiKeyModel _newToken = new DiscordApiKeyModel();
 
     protected override async Task OnInitializedAsync()
     {
-        tokens = await _db.GetAllKeys();
+        _tokens = await TokenDatabase.GetAllKeys();
     }
 
     private async Task InsertToken()
     {
-        await _db.InsertApiKey(new DiscordApiToken()
+        await TokenDatabase.InsertApiKey(new DiscordApiToken()
         {
-            ApiKey = newToken.ApiKey,
-            ServerName = newToken.ServerName
+            ApiKey = _newToken.ApiKey,
+            ServerName = _newToken.ServerName
         });
 
-        tokens = await _db.GetAllKeys();
-        newToken = new DiscordApiKeyModel();
+        _tokens = await TokenDatabase.GetAllKeys();
+        _newToken = new DiscordApiKeyModel();
     }
 
 }

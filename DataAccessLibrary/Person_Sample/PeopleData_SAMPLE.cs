@@ -13,7 +13,7 @@ namespace DataAccessLibrary
             _db = db;
         }
 
-        public Task<List<PersonModel_SAMPLE>> GetPeople()
+        public Task<IEnumerable<PersonModel_SAMPLE>> GetPeople()
         {
             string sql = "select * from dbo.People";
             return _db.LoadData<PersonModel_SAMPLE, dynamic>(sql, new { });

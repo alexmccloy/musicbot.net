@@ -1,0 +1,46 @@
+﻿@page "/ActivityLog"
+
+@using BlazorTable
+@using DataAccessLibrary.ActivityLogging
+@using DataAccessLibrary.Models
+@using Amccloy.MusicBot.Asp.Net.Utils.RX
+@using Amccloy.MusicBot.Asp.Net.Diagnostics
+@using System.Reactive.Linq
+
+@inject IActivityData ActivityDatabase
+@inject ISchedulerFactory SchedulerFactory
+@inject IActivityMonitor ActivityMonitor
+
+<h3>ActivityLog</h3>
+
+<Table TableItem="Activity" Items="_activityHistory" PageSize="20">
+    <Column TableItem="Activity" Title="Occured At" Field="activity => activity.OccuredAt">
+        <Template>
+            @context.OccuredAt.ToString("yyyy/MM/dd HH:mm:ss")
+        </Template>
+    </Column>
+    <Column TableItem="Activity" Title="Command Name" Field="activity => activity.CommandName"></Column>
+    <Column TableItem="Activity" Title="Author" Field="activity => activity.Author"></Column>
+    <Column TableItem="Activity" Title="Channel" Field="activity => activity.Channel"></Column>
+    <Column TableItem="Activity" Title="Succeeded" Field="activity => activity.Succeeded"></Column>
+    <Column TableItem="Activity" Title="Result" Field="activity => activity.Result"></Column>
+    <Pager ShowPageNumber="true" ShowTotalCount="true" ShowPageSizes="true" />
+</Table>
+
+@code {
+
+    private List<Activity> _activityHistory;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _activityHistory = (await ActivityDatabase.GetActivityHistory(DateTime.MinValue)).ToList();
+
+        ActivityMonitor.DatabaseUpdated.ObserveOn(SchedulerFactory.GenerateScheduler())
+                       .Subscribe(async update =>
+                       {
+                           _activityHistory.Add(update);
+                           await InvokeAsync(StateHasChanged);
+                       });
+    }
+
+}

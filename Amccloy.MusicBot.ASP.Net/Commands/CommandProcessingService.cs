@@ -5,6 +5,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Amccloy.MusicBot.Asp.Net.Diagnostics;
 using Amccloy.MusicBot.Asp.Net.Discord;
 using Amccloy.MusicBot.Asp.Net.Utils.RX;
 using Discord.WebSocket;
@@ -17,11 +18,12 @@ namespace Amccloy.MusicBot.Asp.Net.Commands
     /// Hosted service responsible for processing commands from users. It determines which class should handle the
     /// command and then passes the relevant details down.
     /// </summary>
-    public class CommandProcessingService : IHostedService
+    public class CommandProcessingService : BackgroundService
     {
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
         private readonly IDiscordInterface _discordInterface;
         private readonly ISchedulerFactory _schedulerFactory; //Required to pass down to dependent classes
+        private readonly IActivityMonitor _activityMonitor;
         private readonly IScheduler _scheduler;
 
         private IDisposable _subscription;
@@ -35,48 +37,38 @@ namespace Amccloy.MusicBot.Asp.Net.Commands
         /// </summary>
         /// <param name="discordInterface">Interface to send and receive discord messages</param>
         /// <param name="schedulerFactory">Generator for Reactive Schedulers</param>
-        public CommandProcessingService(IDiscordInterface discordInterface, ISchedulerFactory schedulerFactory)
+        /// <param name="activityMonitor">Allows the commands to log an event occuring</param>
+        public CommandProcessingService(IDiscordInterface discordInterface, ISchedulerFactory schedulerFactory, IActivityMonitor activityMonitor)
         {
             _discordInterface = discordInterface;
             _schedulerFactory = schedulerFactory;
+            _activityMonitor = activityMonitor;
             _scheduler = schedulerFactory.GenerateScheduler();
             
             _commandDict = new Dictionary<string, BaseDiscordCommand>();
         }
 
-        /// <summary>
-        /// Starts this service.
-        /// Registers all commands and instantiates a single instance of each Discord Command Processor
-        /// </summary>
-        /// <param name="cancellationToken">Token to stop this operation</param>
-        public async Task StartAsync(CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.Info("Starting Command Processing Service");
             await RegisterCommands();
             
             _logger.Info("Subscribing to incoming messages");
-            _subscription = _discordInterface.MessageReceived
-                                           .ObserveOn(_scheduler)
-                                           .Where(message => message.Content.StartsWith(_commandPrefix))
-                                           .Subscribe(async message => await HandleCommand(message));
+            _discordInterface.MessageReceived
+                             .ObserveOn(_scheduler)
+                             .Where(message => message.Content.StartsWith(_commandPrefix))
+                             .Subscribe(async message => await HandleCommand(message), stoppingToken);
 
-            _discordInterface.MessageReceived.ObserveOn(_scheduler)
-                             .Subscribe(async message =>
-                             {
-                                 _logger.Debug($"Got message {message.Content}");
-                             });
+            if (_logger.IsTraceEnabled)
+            {
+                _discordInterface.MessageReceived.ObserveOn(_scheduler)
+                                 .Subscribe(async message =>
+                                 {
+                                     _logger.Trace($"Got message {message.Content}");
+                                 }, stoppingToken);
+            } 
         }
 
-
-        /// <summary>
-        /// Stops this service from running
-        /// </summary>
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            _subscription?.Dispose();
-            
-            return Task.CompletedTask;
-        }
 
         /// <summary>
         /// Finds every class that implements IDiscordCommand interface and instantiates it, then puts it in a dictionary
@@ -91,7 +83,7 @@ namespace Amccloy.MusicBot.Asp.Net.Commands
             {
                 try
                 {
-                    if (Activator.CreateInstance(command, _schedulerFactory) is BaseDiscordCommand discordCommand)
+                    if (Activator.CreateInstance(command, _schedulerFactory, _activityMonitor) is BaseDiscordCommand discordCommand)
                     {
                         await discordCommand.Init();
                         _commandDict.Add(discordCommand.CommandString, discordCommand);

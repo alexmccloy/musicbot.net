@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Amccloy.MusicBot.Asp.Net.Commands;
+using Amccloy.MusicBot.Asp.Net.Diagnostics;
 using Amccloy.MusicBot.Asp.Net.Discord;
 using Amccloy.MusicBot.Asp.Net.Utils.RX;
 using Discord.WebSocket;
@@ -18,8 +19,8 @@ namespace Amccloy.MusicBot.Net.Test.Commands
         protected override string SummaryHelpText => SummaryHelp;
         protected override string FullHelpText => FullHelp;
 
-        public DummyCommand(ISchedulerFactory schedulerFactory)
-            : base(schedulerFactory)
+        public DummyCommand(ISchedulerFactory schedulerFactory, IActivityMonitor activityMonitor)
+            : base(schedulerFactory, activityMonitor)
         {
         }
 

@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Threading.Tasks;
+using Amccloy.MusicBot.Asp.Net.Diagnostics;
 using Amccloy.MusicBot.Asp.Net.Discord;
 using Amccloy.MusicBot.Asp.Net.Utils.RX;
 using Discord.WebSocket;
@@ -16,8 +17,8 @@ namespace Amccloy.MusicBot.Asp.Net.Commands
                                       "It will reply with the details of the person that ran it, and all the arguments " +
                                       "it received.";
 
-        public TestCommand(ISchedulerFactory schedulerFactory)
-            : base(schedulerFactory)
+        public TestCommand(ISchedulerFactory schedulerFactory, IActivityMonitor activityMonitor)
+            : base(schedulerFactory, activityMonitor)
         {
         }
 

@@ -6,7 +6,7 @@ namespace DataAccessLibrary
 {
     public interface IPeopleData_SAMPLE
     {
-        Task<List<PersonModel_SAMPLE>> GetPeople();
+        Task<IEnumerable<PersonModel_SAMPLE>> GetPeople();
         Task InsertPerson(PersonModel_SAMPLE person);
     }
 }

@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Amccloy.TimerUtils" Version="1.1.0.20" />
+    <PackageReference Include="BlazorTable" Version="1.14.0" />
     <PackageReference Include="Discord.Net" Version="2.3.0-dev-20201223.7" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.1" />
@@ -21,10 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DataAccessLibrary\DataAccessLibrary.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Diagnostics" />
   </ItemGroup>
 
 </Project>

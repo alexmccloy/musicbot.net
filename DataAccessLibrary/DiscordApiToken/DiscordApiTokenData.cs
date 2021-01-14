@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-using DataAccessLibrary.Models;
 
-namespace DataAccessLibrary
+namespace DataAccessLibrary.DiscordApiToken
 {
     //TODO create the Table in the database if it doesnt already exist
     public class DiscordApiTokenData : IDiscordApiTokenData
@@ -16,23 +16,21 @@ namespace DataAccessLibrary
         }
 
         public async Task<string> GetApiToken(string serverName) 
-            //TODO do this properly with Dapper and not using raw strings from the client MONKAS
         {
-            string sql = $"select ApiKey from DiscordApiKey where ServerName = {serverName} LIMIT 1";
-            var result = await _db.LoadData<string, dynamic>(sql, new { });
+            string sql = @"select ApiKey from DiscordApiKey where ServerName = @ServerName LIMIT 1";
+            var result = await _db.LoadData<string, dynamic>(sql, new {ServerName = serverName});
 
-            if (result.Count != 1) throw new InvalidDataException($"The sql database does not contain a servername of {serverName}");
-
-            return result[0];
+            return result.FirstOrDefault() ?? 
+                   throw new InvalidDataException($"The sql database does not contain a servername of {serverName}");
         }
 
-        public Task<List<DiscordApiToken>> GetAllKeys()
+        public Task<IEnumerable<Models.DiscordApiToken>> GetAllKeys()
         {
             string sql = "select * from DiscordApiKey";
-            return _db.LoadData<DiscordApiToken, dynamic>(sql, new { });
+            return _db.LoadData<Models.DiscordApiToken, dynamic>(sql, new { });
         }
 
-        public Task InsertApiKey(DiscordApiToken key)
+        public Task InsertApiKey(Models.DiscordApiToken key)
         {
             string sql = "insert into DiscordApiKey (ServerName, ApiKey) values (@ServerName, @ApiKey)";
             return _db.SaveData(sql, key);

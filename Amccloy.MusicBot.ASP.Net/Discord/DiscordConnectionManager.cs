@@ -7,8 +7,10 @@ using System.Reactive.Subjects;
 using System.Threading;
 using System.Threading.Tasks;
 using Amccloy.MusicBot.Asp.Net.Commands;
+using Amccloy.MusicBot.Asp.Net.Diagnostics;
 using Amccloy.MusicBot.Asp.Net.Utils.RX;
 using DataAccessLibrary;
+using DataAccessLibrary.DiscordApiToken;
 using Discord;
 using Discord.WebSocket;
 using Microsoft.Extensions.Hosting;
@@ -27,11 +29,14 @@ namespace Amccloy.MusicBot.Asp.Net.Discord
                 
         private readonly IDiscordApiTokenData _apiTokenData;
         private readonly ISchedulerFactory _schedulerFactory;
+        private readonly IActivityMonitor _activityMonitor;
 
-        public DiscordConnectionManager(IDiscordApiTokenData apiTokenData, ISchedulerFactory schedulerFactory)
+        public DiscordConnectionManager(IDiscordApiTokenData apiTokenData, ISchedulerFactory schedulerFactory,
+                                        IActivityMonitor activityMonitor)
         {
             _apiTokenData = apiTokenData;
             _schedulerFactory = schedulerFactory;
+            _activityMonitor = activityMonitor;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -84,7 +89,7 @@ namespace Amccloy.MusicBot.Asp.Net.Discord
                 await _discordSocketClient.StartAsync();
 
                 _discordInterface = new DiscordInterface(_discordSocketClient);
-                _commandProcessingService = new CommandProcessingService(_discordInterface, _schedulerFactory);
+                _commandProcessingService = new CommandProcessingService(_discordInterface, _schedulerFactory, _activityMonitor);
                 await _commandProcessingService.StartAsync(CancellationToken.None);
                 //TODO when monitoring users in channels create that service here
 
