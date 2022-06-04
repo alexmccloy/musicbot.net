@@ -1,4 +1,5 @@
 using Amccloy.MusicBot.Asp.Net.Areas.Identity;
+using Amccloy.MusicBot.Asp.Net.Configuration;
 using Amccloy.MusicBot.Asp.Net.Data;
 using Amccloy.MusicBot.Asp.Net.Diagnostics;
 using Microsoft.AspNetCore.Builder;
@@ -17,6 +18,7 @@ using DataAccessLibrary.ActivityLogging;
 using DataAccessLibrary.DiscordApiToken;
 using DataAccessLibrary.Models;
 using Discord.WebSocket;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Amccloy.MusicBot.Asp.Net
 {
@@ -42,7 +44,9 @@ namespace Amccloy.MusicBot.Asp.Net
             services.AddServerSideBlazor();
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
             services.AddDatabaseDeveloperPageExceptionFilter();
-            services.AddSingleton<WeatherForecastService>();
+            
+            //Config
+            services.Configure<DiscordOptions>(Configuration.GetSection("Discord"));
             
             //General stuff
             services.AddSingleton<ISchedulerFactory, DefaultSchedulerFactory>();
@@ -76,6 +80,7 @@ namespace Amccloy.MusicBot.Asp.Net
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+            
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

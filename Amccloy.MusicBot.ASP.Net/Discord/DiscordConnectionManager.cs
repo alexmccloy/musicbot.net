@@ -48,8 +48,8 @@ namespace Amccloy.MusicBot.Asp.Net.Discord
                 _discordSocketClient = new DiscordSocketClient(new DiscordSocketConfig
                 {
                     MessageCacheSize = 0,
-                    ExclusiveBulkDelete = true,
                     AlwaysDownloadUsers = true,
+                    
 
                     GatewayIntents = 
                         GatewayIntents.Guilds |
