@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amccloy.MusicBot.Net.Test",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amccloy.MusicBot.Net", "Amccloy.MusicBot.Net\Amccloy.MusicBot.Net.csproj", "{3B5DCB83-1F90-4CAF-80E5-FAD887E5A184}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TriviaImporter", "TriviaImporter\TriviaImporter.csproj", "{03FEE4A4-7F08-4B7D-9484-17A693B0DEA3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amccloy.MusicBot.Net.Dbo", "Amccloy.MusicBot.Net.Dbo\Amccloy.MusicBot.Net.Dbo.csproj", "{79CC8C7B-774E-4747-B6B4-3ABA8E1A5B6E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,13 @@ Global
 		{3B5DCB83-1F90-4CAF-80E5-FAD887E5A184}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B5DCB83-1F90-4CAF-80E5-FAD887E5A184}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B5DCB83-1F90-4CAF-80E5-FAD887E5A184}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03FEE4A4-7F08-4B7D-9484-17A693B0DEA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03FEE4A4-7F08-4B7D-9484-17A693B0DEA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03FEE4A4-7F08-4B7D-9484-17A693B0DEA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03FEE4A4-7F08-4B7D-9484-17A693B0DEA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79CC8C7B-774E-4747-B6B4-3ABA8E1A5B6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79CC8C7B-774E-4747-B6B4-3ABA8E1A5B6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79CC8C7B-774E-4747-B6B4-3ABA8E1A5B6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79CC8C7B-774E-4747-B6B4-3ABA8E1A5B6E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

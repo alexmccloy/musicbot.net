@@ -16,7 +16,7 @@ namespace Amccloy.MusicBot.Net
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, configBuilder) =>
                 {
-                    configBuilder.AddEnvironmentVariables("MusicBotNet_");
+                    configBuilder.AddEnvironmentVariables("MUSICBOTNET_");
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

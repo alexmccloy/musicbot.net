@@ -1,9 +1,11 @@
 using Amccloy.MusicBot.Net.Configuration;
 using Amccloy.MusicBot.Net.Discord;
+using Amccloy.MusicBot.Net.Model;
 using Amccloy.MusicBot.Net.Utils.RX;
 using Discord.WebSocket;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -25,6 +27,19 @@ namespace Amccloy.MusicBot.Net
         {
             //Config
             services.Configure<DiscordOptions>(Configuration.GetSection("Discord"));
+            services.Configure<PostgresOptions>(Configuration.GetSection("Postgres"));
+            
+            // Database stuff
+            services.AddDbContext<TriviaContext>(optionsBuilder =>
+            {
+                optionsBuilder.UseNpgsql(builder =>
+                              {
+                                  builder.UseNetTopologySuite()
+                                         .MigrationsHistoryTable("__EFMigrationsHistory", TriviaContext.SchemaName)
+                                         .EnableRetryOnFailure(5);
+                              })
+                              .UseSnakeCaseNamingConvention();
+            });
             
             //General stuff
             services.AddSingleton<ISchedulerFactory, DefaultSchedulerFactory>();
@@ -36,8 +51,11 @@ namespace Amccloy.MusicBot.Net
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder builder, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder builder, IWebHostEnvironment env, TriviaContext dbContext)
         {
+            // Automatically perform any pending migrations.
+            dbContext.Database.Migrate();
+            
             if (env.IsDevelopment())
             {
             }

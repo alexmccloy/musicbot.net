@@ -6,3 +6,20 @@ services:
     hostname: musicbot
     environment:
       MUSICBOTNET_Discord__BotToken: ${TOKEN}
+      MUSICBOTNET_Postgres__Password: ${PG_PASSWORD}
+  
+  postgres:
+    image: postgres:latest
+    hostname: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=musicbot
+      - POSTGRES_PASSWORD=${PG_PASSWORD}
+    ports:
+      - '55432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+        
+volumes: 
+  db:
+    driver: local
