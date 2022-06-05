@@ -1,0 +1,8 @@
+version: "3.9"
+
+services:
+  musicbot:
+    build: Amccloy.MusicBot.Net/
+    hostname: musicbot
+    environment:
+      MUSICBOTNET_Discord__BotToken: ${TOKEN}

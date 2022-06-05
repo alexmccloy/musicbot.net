@@ -32,6 +32,7 @@ namespace Amccloy.MusicBot.Net.Discord
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
                 _logger.Info($"Setting up discord client");
+                _logger.Info($"SEcret token is {_discordOptions.BotToken}");
 
                 _discordSocketClient = new DiscordSocketClient(new DiscordSocketConfig
                 {
