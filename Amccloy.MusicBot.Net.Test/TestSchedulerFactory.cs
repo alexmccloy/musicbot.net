@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reactive.Concurrency;
-using Amccloy.MusicBot.Asp.Net.Utils.RX;
+using Amccloy.MusicBot.Net.Utils.RX;
 using Microsoft.Reactive.Testing;
 
 namespace Amccloy.MusicBot.Net.Test

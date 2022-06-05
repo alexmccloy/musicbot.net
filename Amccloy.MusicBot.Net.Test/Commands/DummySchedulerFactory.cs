@@ -1,5 +1,5 @@
 ﻿using System.Reactive.Concurrency;
-using Amccloy.MusicBot.Asp.Net.Utils.RX;
+using Amccloy.MusicBot.Net.Utils.RX;
 
 namespace Amccloy.MusicBot.Net.Test.Commands
 {

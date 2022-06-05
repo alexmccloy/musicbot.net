@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amccloy.MusicBot.Net.Test", "Amccloy.MusicBot.Net.Test\Amccloy.MusicBot.Net.Test.csproj", "{9C5B7D96-9ED4-47E1-8761-ADE132F59DA5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amccloy.MusicBot.Asp.Net", "Amccloy.MusicBot.ASP.Net\Amccloy.MusicBot.Asp.Net.csproj", "{3B5DCB83-1F90-4CAF-80E5-FAD887E5A184}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amccloy.MusicBot.Net", "Amccloy.MusicBot.Net\Amccloy.MusicBot.Net.csproj", "{3B5DCB83-1F90-4CAF-80E5-FAD887E5A184}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

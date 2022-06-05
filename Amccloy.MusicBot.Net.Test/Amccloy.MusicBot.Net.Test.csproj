@@ -16,7 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Amccloy.MusicBot.ASP.Net\Amccloy.MusicBot.Asp.Net.csproj" />
+      <ProjectReference Include="..\Amccloy.MusicBot.Net\Amccloy.MusicBot.Net.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,4 +1,4 @@
-﻿using Amccloy.MusicBot.Asp.Net.Utils;
+﻿using Amccloy.MusicBot.Net.Utils;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shouldly;
 
