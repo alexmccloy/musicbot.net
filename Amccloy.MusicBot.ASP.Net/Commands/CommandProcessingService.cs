@@ -5,7 +5,6 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Amccloy.MusicBot.Asp.Net.Diagnostics;
 using Amccloy.MusicBot.Asp.Net.Discord;
 using Amccloy.MusicBot.Asp.Net.Utils.RX;
 using Discord.WebSocket;
@@ -23,7 +22,6 @@ namespace Amccloy.MusicBot.Asp.Net.Commands
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
         private readonly IDiscordInterface _discordInterface;
         private readonly ISchedulerFactory _schedulerFactory; //Required to pass down to dependent classes
-        private readonly IActivityMonitor _activityMonitor;
         private readonly IScheduler _scheduler;
 
         private IDisposable _subscription;
@@ -37,12 +35,10 @@ namespace Amccloy.MusicBot.Asp.Net.Commands
         /// </summary>
         /// <param name="discordInterface">Interface to send and receive discord messages</param>
         /// <param name="schedulerFactory">Generator for Reactive Schedulers</param>
-        /// <param name="activityMonitor">Allows the commands to log an event occuring</param>
-        public CommandProcessingService(IDiscordInterface discordInterface, ISchedulerFactory schedulerFactory, IActivityMonitor activityMonitor)
+        public CommandProcessingService(IDiscordInterface discordInterface, ISchedulerFactory schedulerFactory)
         {
             _discordInterface = discordInterface;
             _schedulerFactory = schedulerFactory;
-            _activityMonitor = activityMonitor;
             _scheduler = schedulerFactory.GenerateScheduler();
             
             _commandDict = new Dictionary<string, BaseDiscordCommand>();
@@ -83,7 +79,7 @@ namespace Amccloy.MusicBot.Asp.Net.Commands
             {
                 try
                 {
-                    if (Activator.CreateInstance(command, _schedulerFactory, _activityMonitor) is BaseDiscordCommand discordCommand)
+                    if (Activator.CreateInstance(command, _schedulerFactory) is BaseDiscordCommand discordCommand)
                     {
                         await discordCommand.Init();
                         _commandDict.Add(discordCommand.CommandString, discordCommand);

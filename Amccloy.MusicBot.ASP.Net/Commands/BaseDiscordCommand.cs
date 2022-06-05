@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Amccloy.MusicBot.Asp.Net.Diagnostics;
 using Amccloy.MusicBot.Asp.Net.Discord;
 using Amccloy.MusicBot.Asp.Net.Utils;
 using Amccloy.MusicBot.Asp.Net.Utils.RX;
@@ -16,13 +15,11 @@ namespace Amccloy.MusicBot.Asp.Net.Commands
     public abstract class BaseDiscordCommand
     {
         protected readonly ISchedulerFactory SchedulerFactory;
-        protected readonly IActivityMonitor ActivityMonitor;
         protected static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
-        protected BaseDiscordCommand(ISchedulerFactory schedulerFactory, IActivityMonitor activityMonitor)
+        protected BaseDiscordCommand(ISchedulerFactory schedulerFactory)
         {
             SchedulerFactory = schedulerFactory;
-            ActivityMonitor = activityMonitor;
         }
 
         /// <summary>

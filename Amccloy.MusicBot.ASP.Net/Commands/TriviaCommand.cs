@@ -6,7 +6,6 @@ using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
-using Amccloy.MusicBot.Asp.Net.Diagnostics;
 using Amccloy.MusicBot.Asp.Net.Discord;
 using Amccloy.MusicBot.Asp.Net.Trivia;
 using Amccloy.MusicBot.Asp.Net.Utils.RX;
@@ -20,11 +19,10 @@ namespace Amccloy.MusicBot.Asp.Net.Commands
     /// </summary>
     public class TriviaCommand : BaseDiscordCommand
     {
-        private readonly ISchedulerFactory _schedulerFactory;
         private Dictionary<string, ITriviaQuestionProvider> _questionProviders;
         private string _fullHelpText;
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
-        private IScheduler _scheduler;
+        private readonly IScheduler _scheduler;
 
 
         public override string CommandString => "trivia";
@@ -33,8 +31,8 @@ namespace Amccloy.MusicBot.Asp.Net.Commands
         protected override string FullHelpText => _fullHelpText;
 
         
-        public TriviaCommand(ISchedulerFactory schedulerFactory, IActivityMonitor activityMonitor)
-            : base(schedulerFactory, activityMonitor)
+        public TriviaCommand(ISchedulerFactory schedulerFactory)
+            : base(schedulerFactory)
         {
             _scheduler = schedulerFactory.GenerateScheduler();
         }

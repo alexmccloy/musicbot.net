@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Amccloy.MusicBot.Asp.Net.Diagnostics;
 using Amccloy.MusicBot.Asp.Net.Discord;
 using Amccloy.MusicBot.Asp.Net.Utils.RX;
-using DataAccessLibrary.Models;
 using Discord.WebSocket;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.VisualBasic.CompilerServices;
 using NLog;
 
 namespace Amccloy.MusicBot.Asp.Net.Commands
@@ -27,8 +23,8 @@ namespace Amccloy.MusicBot.Asp.Net.Commands
         protected override string[] AllowedChannels { get; } = {"robotics", "dev", "dev2"}; //TODO set this up via the web interface?
         protected override string[] AllowedRoles { get; } = {"admin", "TBD", "Battle Cup"};
 
-        public RenameUserCommand(ISchedulerFactory schedulerFactory, IActivityMonitor activityMonitor)
-            : base(schedulerFactory, activityMonitor)
+        public RenameUserCommand(ISchedulerFactory schedulerFactory)
+            : base(schedulerFactory)
         {
         }
 
@@ -81,39 +77,18 @@ namespace Amccloy.MusicBot.Asp.Net.Commands
                 {
                     await user?.ModifyAsync(x => x.Nickname = newName);
                     await SendMessage($"Changed {currentName} to {newName}");
-                    await ActivityMonitor.LogActivity(new Activity()
-                    {
-                        CommandName = CommandString,
-                        Author = rawMessage.Author.Username,
-                        Channel = rawMessage.Channel.Name,
-                        Succeeded = true,
-                        Result = $"Changed user {user.Username} nickname from {currentName} to {newName}"
-                    });
+                    //TODO log successful?
                 }
                 catch (Exception e)
                 {
                     await SendMessage($"ERROR: {e.Message}");
-                    await ActivityMonitor.LogActivity(new Activity()
-                    {
-                        CommandName = CommandString,
-                        Author = rawMessage.Author.Username,
-                        Channel = rawMessage.Channel.Name,
-                        Succeeded = false,
-                        Result = $"Failed to change username for user {user.Username}: {e.Message}"
-                    });
+                    //TODO log the error
                 }
             }
             else
             {
                 await SendMessage($"Cannot find user with name {currentName}");
-                await ActivityMonitor.LogActivity(new Activity()
-                {
-                    CommandName = CommandString,
-                    Author = rawMessage.Author.Username,
-                    Channel = rawMessage.Channel.Name,
-                    Succeeded = false,
-                    Result = $"Cannot find user with name {currentName}"
-                });
+                //TODO log this bad boy
             }
 
             async Task SendMessage(string message) => await discordInterface.SendMessageAsync(rawMessage.Channel, message);

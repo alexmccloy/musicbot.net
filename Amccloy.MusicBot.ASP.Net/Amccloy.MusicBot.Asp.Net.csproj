@@ -2,12 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <UserSecretsId>aspnet-Amccloy.MusicBot.Asp.Net-A3ACBEF2-F8C8-411B-B615-CF3B280B7779</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Amccloy.TimerUtils" Version="1.1.0.20" />
-    <PackageReference Include="BlazorTable" Version="1.14.0" />
     <PackageReference Include="Discord.Net" Version="3.7.2" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.1" />
@@ -21,7 +19,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataAccessLibrary\DataAccessLibrary.csproj" />
+    <_ContentIncludedByDefault Remove="Pages\Error.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\_Host.cshtml" />
+    <_ContentIncludedByDefault Remove="Pages\ActivityLog.razor" />
+    <_ContentIncludedByDefault Remove="Pages\ApiKey.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Counter.razor" />
+    <_ContentIncludedByDefault Remove="Pages\Index.razor" />
   </ItemGroup>
 
 </Project>
