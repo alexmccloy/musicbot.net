@@ -8,7 +8,7 @@ namespace Amccloy.MusicBot.Net.Model;
 public class TriviaContext : DbContext
 {
     private readonly PostgresOptions _pgOptions;
-    public const string SchemaName = "trivia-questions";
+    public const string SchemaName = "trivia_questions";
     public DbSet<StandardTriviaQuestionDbo> StandardTriviaQuestions { get; set; }
     public DbSet<MultiChoiceTriviaQuestionDbo> MultiChoiceTriviaQuestions { get; set; }
 
