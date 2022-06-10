@@ -1,6 +1,8 @@
+using Amccloy.MusicBot.Net.Commands;
 using Amccloy.MusicBot.Net.Configuration;
 using Amccloy.MusicBot.Net.Discord;
 using Amccloy.MusicBot.Net.Model;
+using Amccloy.MusicBot.Net.Utils;
 using Amccloy.MusicBot.Net.Utils.RX;
 using Discord.WebSocket;
 using Microsoft.AspNetCore.Builder;
@@ -45,9 +47,14 @@ namespace Amccloy.MusicBot.Net
             services.AddSingleton<ISchedulerFactory, DefaultSchedulerFactory>();
             
             //Discord stuff
-            services.AddHostedService<DiscordConnectionManager>();
-            services.AddTransient<DiscordSocketClient>();
-            services.AddSingleton<IDiscordInterface, DiscordInterface>();
+            services.AddSingleton<DiscordConnectionManager>()
+                    .AddHostedService<CommandProcessingService>()
+                    .AddSingleton<DiscordSocketClient>()
+                    .AddSingleton<IDiscordInterface, DiscordInterface>();
+
+            services.AddDiscordCommand<TestCommand>()
+                    .AddDiscordCommand<RenameUserCommand>()
+                    .AddDiscordCommand<TriviaCommand>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

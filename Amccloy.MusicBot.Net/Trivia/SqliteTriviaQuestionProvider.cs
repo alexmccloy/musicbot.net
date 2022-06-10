@@ -16,7 +16,7 @@ namespace Amccloy.MusicBot.Net.Trivia
         protected static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
         
-        public string Name => "open_trivia_db";
+        public string Name => "open_trivia_db_old";
         public string Description => "A database of crowd sources trivia questions. Be prepared for some WEIRD SHIT";
         public TimeSpan QuestionDuration => TimeSpan.FromSeconds(30);
 

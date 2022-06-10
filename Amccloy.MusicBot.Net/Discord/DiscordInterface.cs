@@ -14,6 +14,7 @@ namespace Amccloy.MusicBot.Net.Discord
     public class DiscordInterface : IDiscordInterface
     {
         public DiscordSocketClient RawClient { get; }
+
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
         private readonly Subject<SocketMessage> _socketMessageSubject = new();
 

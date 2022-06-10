@@ -20,9 +20,10 @@ namespace Amccloy.MusicBot.Net.Commands
     public class CommandProcessingService : BackgroundService
     {
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
-        private readonly IDiscordInterface _discordInterface;
+        private readonly DiscordConnectionManager _discordConnectionManager;
         private readonly ISchedulerFactory _schedulerFactory; //Required to pass down to dependent classes
         private readonly IScheduler _scheduler;
+        private IDiscordInterface _discordInterface;
 
         private IDisposable _subscription;
 
@@ -33,21 +34,33 @@ namespace Amccloy.MusicBot.Net.Commands
         /// <summary>
         /// Constructor
         /// </summary>
-        /// <param name="discordInterface">Interface to send and receive discord messages</param>
+        /// <param name="discordConnectionManager"></param>
         /// <param name="schedulerFactory">Generator for Reactive Schedulers</param>
-        public CommandProcessingService(IDiscordInterface discordInterface, ISchedulerFactory schedulerFactory)
+        /// <param name="commands"></param>
+        public CommandProcessingService(DiscordConnectionManager discordConnectionManager, 
+                                        ISchedulerFactory schedulerFactory,
+                                        IEnumerable<BaseDiscordCommand> commands)
         {
-            _discordInterface = discordInterface;
+            _discordConnectionManager = discordConnectionManager;
             _schedulerFactory = schedulerFactory;
             _scheduler = schedulerFactory.GenerateScheduler();
             
             _commandDict = new Dictionary<string, BaseDiscordCommand>();
+            foreach (var command in commands)
+            {
+                _commandDict.Add(command.CommandString, command);
+                _logger.Info($"Added command: {command.CommandString}");
+                //TODO if there are ever any commands that need to run init we would do it here
+            }
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.Info("Starting Command Processing Service");
             await RegisterCommands();
+            
+            _logger.Info("Requesting new discord interface");
+            _discordInterface = await _discordConnectionManager.GetDiscordClient();
             
             _logger.Info("Subscribing to incoming messages");
             _discordInterface.MessageReceived
@@ -72,30 +85,30 @@ namespace Amccloy.MusicBot.Net.Commands
         /// </summary>
         private async Task RegisterCommands()
         {
-            foreach (Type command in System.Reflection.Assembly
-                                           .GetExecutingAssembly()
-                                           .GetTypes()
-                                           .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(BaseDiscordCommand))))
-            {
-                try
-                {
-                    if (Activator.CreateInstance(command, _schedulerFactory) is BaseDiscordCommand discordCommand)
-                    {
-                        await discordCommand.Init();
-                        _commandDict.Add(discordCommand.CommandString, discordCommand);
-                        _logger.Info($"Added command: {discordCommand.CommandString}");
-                    }
-                    else
-                    {
-                        _logger.Error($"Failed to register command {command.Name}");
-                    }
-                }
-                catch (Exception e)
-                {
-                    _logger.Error(e, $"Failed to create command {command.Name}: {e.Message}");
-                }
-                
-            }
+            //TODO change this so they are DI injected instead
+            // foreach (Type command in System.Reflection.Assembly
+            //                                .GetExecutingAssembly()
+            //                                .GetTypes()
+            //                                .Where(type => type.IsClass && !type.IsAbstract && type.IsSubclassOf(typeof(BaseDiscordCommand))))
+            // {
+            //     try
+            //     {
+            //         if (Activator.CreateInstance(command, _schedulerFactory) is BaseDiscordCommand discordCommand)
+            //         {
+            //             await discordCommand.Init();
+            //             _commandDict.Add(discordCommand.CommandString, discordCommand);
+            //         }
+            //         else
+            //         {
+            //             _logger.Error($"Failed to register command {command.Name}");
+            //         }
+            //     }
+            //     catch (Exception e)
+            //     {
+            //         _logger.Error(e, $"Failed to create command {command.Name}: {e.Message}");
+            //     }
+            //     
+            // }
         }
         
         /// <summary>
