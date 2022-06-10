@@ -5,6 +5,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Amccloy.MusicBot.Net.Discord;
 using Amccloy.MusicBot.Net.Trivia;
@@ -19,22 +20,39 @@ namespace Amccloy.MusicBot.Net.Commands
     /// </summary>
     public class TriviaCommand : BaseDiscordCommand
     {
-        private Dictionary<string, ITriviaQuestionProvider> _questionProviders;
+        private Dictionary<string, ITriviaQuestionProvider> _questionProviders = new();
         private string _fullHelpText;
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
         private readonly IScheduler _scheduler;
 
-
+        private CancellationTokenSource _gameInProgress = null; //This will be null when a game is not in progress
+        
         public override string CommandString => "trivia";
         protected override string SummaryHelpText => "Plays an interactive game of trivia";
 
         protected override string FullHelpText => _fullHelpText;
 
         
-        public TriviaCommand(ISchedulerFactory schedulerFactory)
+        public TriviaCommand(ISchedulerFactory schedulerFactory, IEnumerable<ITriviaQuestionProvider> questionProviders)
             : base(schedulerFactory)
         {
             _scheduler = schedulerFactory.GenerateScheduler();
+            
+            
+            foreach (var triviaQuestionProvider in questionProviders)
+            {
+                _questionProviders.Add(triviaQuestionProvider.Name, triviaQuestionProvider);
+            }
+            // Populate the help text so that players can see the list of available trivia providers
+            var sb = new StringBuilder();
+            sb.AppendLine("Game of trivia. Usage: !trivia source <question count>");
+            sb.AppendLine("Available sources are:");
+            foreach (var triviaQuestionProvider in _questionProviders.Values)
+            {
+                sb.AppendLine($"    {triviaQuestionProvider.Name} - {triviaQuestionProvider.Description}");
+            }
+
+            _fullHelpText = sb.ToString();
         }
         
         /// <summary>
@@ -48,48 +66,83 @@ namespace Amccloy.MusicBot.Net.Commands
         /// <param name="rawMessage"></param>
         protected override async Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage rawMessage)
         {
+            //TODO this should probably have a semaphore to make sure we dont get a race condition if lots of people spam to play
+            
+            // Check if we are already in a trivia game
+            if (_gameInProgress != null)
+            {
+                // Check if they have requested to stop
+                if (args.Contains("stop"))
+                {
+                    await discordInterface.SendMessageAsync(rawMessage.Channel, "Stopping trivia game due to someone requesting it be cancelled");
+                    _gameInProgress.Cancel();
+                }
+                else
+                {
+                    // A game is already in progress so tell the user to leave
+                    await discordInterface.SendMessageAsync(rawMessage.Channel, $"A game is already in progress. Type '{CommandString} stop' to stop that game");
+                }
+
+                return;
+            }
+            
             if (!TryExtractArgs(args, out var questionProvider, out var gameLength))
             {
                 // Command was used wrong, print usage info and exit
                 await discordInterface.SendMessageAsync(rawMessage.Channel, FullHelpText);
                 return;
             }
-            
-            Subject<DiscordMessage> subject = new Subject<DiscordMessage>();
-            discordInterface.MessageReceived.ObserveOn(_scheduler)
-                            .Where(message => message.Channel.Id == rawMessage.Channel.Id)
-                            .Subscribe(message =>
-                            {
-                                subject.OnNext(new DiscordMessage(message.Channel, message.Author.Username, message.Content));
-                            });
-            
-            var gameResult = new GameResults();
 
-            // Start asking questions
-            var questions = await questionProvider.GetQuestions(gameLength); //TODO this might need to be async
-            for (int i =0; i< questions.Count; i++)
+            // Start the game
+            try
             {
-                await discordInterface.SendMessageAsync(rawMessage.Channel, $"Question {i + 1}:\n{questions[i].Question}");
-                var result = await questions[i].ExecuteQuestion(subject.AsObservable(), questionProvider.QuestionDuration);
-
-                if (result.Scores.Count == 0)
-                {
-                    // No one was correct
-                    await discordInterface.SendMessageAsync(rawMessage.Channel, $"No one was correct! Answer:\n{questions[i].Answer}");
-                }
-                else
-                {
-                    gameResult.CombineWith(result);
-                    //Someone was correct
-                    await discordInterface.SendMessageAsync(rawMessage.Channel, $"{String.Join(", ", result.Scores.Where(score => score.Value > 0).Select(score => score.Key))} was correct!\n" +
-                                                                                $"{gameResult.PrintScores()}");
-                }
-            }
+                _gameInProgress = new CancellationTokenSource();
             
-            // Game is over, inform everyone of the winner
-            await discordInterface.SendMessageAsync(rawMessage.Channel,
-                                                    $"Game over, winner was {gameResult.GetWinner()}\n" +
-                                                    $"{gameResult.PrintScores()}");
+                Subject<DiscordMessage> subject = new Subject<DiscordMessage>();
+                discordInterface.MessageReceived.ObserveOn(_scheduler)
+                                .Where(message => message.Channel.Id == rawMessage.Channel.Id)
+                                .Subscribe(message =>
+                                {
+                                    subject.OnNext(new DiscordMessage(message.Channel, message.Author.Username, message.Content));
+                                });
+            
+                var gameResult = new GameResults();
+
+                // Start asking questions
+                var questions = await questionProvider.GetQuestions(gameLength); //TODO this might need to be async
+                for (int i =0; i< questions.Count; i++)
+                {
+                    if (_gameInProgress.IsCancellationRequested)
+                    {
+                        break;
+                    }
+                
+                    await discordInterface.SendMessageAsync(rawMessage.Channel, $"Question {i + 1}:\n{questions[i].Question}");
+                    var result = await questions[i].ExecuteQuestion(subject.AsObservable(), questionProvider.QuestionDuration);
+
+                    if (result.Scores.Count == 0)
+                    {
+                        // No one was correct
+                        await discordInterface.SendMessageAsync(rawMessage.Channel, $"No one was correct! Answer:\n{questions[i].Answer}");
+                    }
+                    else
+                    {
+                        gameResult.CombineWith(result);
+                        //Someone was correct
+                        await discordInterface.SendMessageAsync(rawMessage.Channel, $"{String.Join(", ", result.Scores.Where(score => score.Value > 0).Select(score => score.Key))} was correct!\n" +
+                                                                                    $"{gameResult.PrintScores()}");
+                    }
+                }
+            
+                // Game is over, inform everyone of the winner
+                await discordInterface.SendMessageAsync(rawMessage.Channel,
+                                                        $"Game over, winner was {gameResult.GetWinner()}\n" +
+                                                        $"{gameResult.PrintScores()}");
+            }
+            finally
+            {
+                _gameInProgress = null;
+            }
         }
 
         /// <summary>
@@ -121,48 +174,11 @@ namespace Amccloy.MusicBot.Net.Commands
         }
 
         /// <summary>
-        /// Finds all available trivia providers and uses them to populate the _questionProviders list.
-        /// Then updates the help text with this new list
+        /// Does nothing now. Nice
         /// </summary>
-        public override async Task Init()
+        public override Task Init()
         {
-            //Find all the ITriviaQuestionProviders and populate a list so that it can be used in help text and to 
-            //    select which source to use when playing
-            _questionProviders = new Dictionary<string, ITriviaQuestionProvider>();
-
-            foreach (var triviaProvider in System.Reflection.Assembly
-                                                 .GetExecutingAssembly()
-                                                 .GetTypes()
-                                                 .Where(type => type.IsClass && ! type.IsAbstract && type.GetInterfaces().Contains(typeof(ITriviaQuestionProvider))))
-            {
-                try
-                {
-                    if (Activator.CreateInstance(triviaProvider, SchedulerFactory) is ITriviaQuestionProvider questionProvider)
-                    {
-                        await questionProvider.Init();
-                        _questionProviders.Add(questionProvider.Name.ToLower(), questionProvider);
-                    }
-                    else
-                    {
-                        _logger.Error($"Failed to initialise trivia question provider {triviaProvider.Name}");
-                    }
-                }
-                catch (Exception e)
-                {
-                    _logger.Error(e, $"Failed to create trivia question provider {triviaProvider.Name}: {e.Message}");
-                }
-            }
-            
-            // Populate the help text so that players can see the list of available trivia providers
-            var sb = new StringBuilder();
-            sb.AppendLine("Game of trivia. Usage: !trivia source <question count>");
-            sb.AppendLine("Available sources are:");
-            foreach (var triviaQuestionProvider in _questionProviders.Values)
-            {
-                sb.AppendLine($"    {triviaQuestionProvider.Name} - {triviaQuestionProvider.Description}");
-            }
-
-            _fullHelpText = sb.ToString();
+            return Task.CompletedTask;
         }
 
     }

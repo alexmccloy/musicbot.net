@@ -38,6 +38,7 @@ public class SqlTriviaQuestionProvider : ITriviaQuestionProvider
         var questions = await dbContext.StandardTriviaQuestions
                                        .OrderBy(x => Guid.NewGuid())
                                        .Take(count)
+                                       .AsNoTracking()
                                        .ToListAsync();
 
         return questions.Select(q => new StandardTriviaQuestion(q.Question, q.Answer, _schedulerFactory) as ITriviaQuestion)

@@ -125,7 +125,17 @@ namespace Amccloy.MusicBot.Net.Commands
 
             if (_commandDict.ContainsKey(command))
             {
-                await _commandDict[command].ExecuteCommand(_discordInterface, args, message);
+                try
+                {
+                    await _commandDict[command].ExecuteCommand(_discordInterface, args, message);
+                }
+                catch (Exception e)
+                {
+                    await _discordInterface.SendMessageAsync(message.Channel,
+                                                             $"Encountered an unpected error when trying to execute {message.Content}. " +
+                                                             $"Please report this to the bot administrator");
+                    _logger.Error(e, $"Encountered an execption when trying to execute a command {message.Content}");
+                }
             }
             else if (command == "help")
             {

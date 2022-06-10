@@ -9,12 +9,14 @@ services:
       MUSICBOTNET_Postgres__Password: ${PG_PASSWORD}
   
   postgres:
-    image: postgres:latest
+#    image: postgres:latest
+    build: postgres/
     hostname: postgres
     restart: always
     environment:
       - POSTGRES_USER=musicbot
       - POSTGRES_PASSWORD=${PG_PASSWORD}
+      - POSTGRES_DB=musicbot
     ports:
       - '55432:5432'
     volumes:
