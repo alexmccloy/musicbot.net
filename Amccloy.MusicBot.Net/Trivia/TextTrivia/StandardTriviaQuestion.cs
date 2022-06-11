@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Amccloy.MusicBot.Net.Discord;
 using Amccloy.MusicBot.Net.Utils.RX;
 
-namespace Amccloy.MusicBot.Net.Trivia
+namespace Amccloy.MusicBot.Net.Trivia.TextTrivia
 {
     /// <summary>
     /// Represents a trivia question with a single question and single text based answer.
@@ -94,7 +94,7 @@ namespace Amccloy.MusicBot.Net.Trivia
             phase1 = false;
             
             //PHASE 2 - always lasts for 1 second and add all answers
-            await Task.Delay(1);
+            await Task.Delay(1000);
 
             return result;
         }

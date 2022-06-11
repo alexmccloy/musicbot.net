@@ -1,5 +1,6 @@
 ﻿using Amccloy.MusicBot.Net.Commands;
 using Amccloy.MusicBot.Net.Trivia;
+using Amccloy.MusicBot.Net.Trivia.TextTrivia;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Amccloy.MusicBot.Net.Utils;

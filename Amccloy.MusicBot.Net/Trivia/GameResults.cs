@@ -6,7 +6,7 @@ using System.Text;
 namespace Amccloy.MusicBot.Net.Trivia
 {
     /// <summary>
-    /// The result from a single trivia question
+    /// The result from a single trivia match
     /// </summary>
     public class GameResults
     {

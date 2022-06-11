@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Amccloy.MusicBot.Net.Discord;
 using Amccloy.MusicBot.Net.Trivia;
+using Amccloy.MusicBot.Net.Trivia.TextTrivia;
 using Amccloy.MusicBot.Net.Utils.RX;
 using Discord.WebSocket;
 using NLog;

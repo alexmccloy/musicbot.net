@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Amccloy.MusicBot.Net.Utils.RX;
 
-namespace Amccloy.MusicBot.Net.Trivia
+namespace Amccloy.MusicBot.Net.Trivia.TextTrivia
 {
     /// <summary>
     /// An implementation of a trivia question provider that only returns static text based on the question number

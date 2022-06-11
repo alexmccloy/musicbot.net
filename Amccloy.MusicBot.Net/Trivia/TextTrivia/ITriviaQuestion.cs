@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using Amccloy.MusicBot.Net.Discord;
 
-namespace Amccloy.MusicBot.Net.Trivia
+namespace Amccloy.MusicBot.Net.Trivia.TextTrivia
 {
     /// <summary>
     /// Represents a single trivia question

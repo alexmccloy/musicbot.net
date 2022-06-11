@@ -4,6 +4,7 @@ using System.Reactive;
 using System.Threading.Tasks;
 using Amccloy.MusicBot.Net.Discord;
 using Amccloy.MusicBot.Net.Trivia;
+using Amccloy.MusicBot.Net.Trivia.TextTrivia;
 using Microsoft.Reactive.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Shouldly;

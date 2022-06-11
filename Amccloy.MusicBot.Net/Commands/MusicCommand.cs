@@ -66,7 +66,7 @@ public class MusicCommand : BaseDiscordCommand
         
         try
         {
-            var player = await GetPlayer(discordInterface, rawMessage);
+            var player = await DiscordAudioManager.GetPlayer(rawMessage.Author.Id);
 
             var track = await _audioService.GetTrackAsync(query, SearchMode.YouTube) 
                      ?? throw new DiscordCommandException("Search returned no results");
@@ -85,14 +85,14 @@ public class MusicCommand : BaseDiscordCommand
     {
         try
         {
-            var player = await GetPlayer(discordInterface, rawMessage);
+            var player = await DiscordAudioManager.GetPlayer(rawMessage.Author.Id);
 
             if (player.CurrentTrack == null)
             {
                 return;
             }
 
-            await player.StopAsync();
+            await player.StopAsync(disconnect:true);
         }
         catch (DiscordCommandException e)
         {
@@ -101,36 +101,5 @@ public class MusicCommand : BaseDiscordCommand
         }
     }
 
-    /// <summary>
-    /// Gets the music player, and if necessary joins the channel of the user that requested it
-    /// </summary>
-    /// TODO tidy this up so we are only sending the actual properties it requires
-    private async Task<LavalinkPlayer> GetPlayer(IDiscordInterface discordInterface, SocketMessage rawMessage)
-    {
-        var guild = discordInterface.RawClient.Guilds.First();
-        var player = _audioService.GetPlayer<LavalinkPlayer>(guild.ApplicationId ?? default);
 
-        // Check if the player already exists and is connected
-        if (player != null && player.State != PlayerState.NotConnected && player.State != PlayerState.Destroyed)
-        {
-            return player;
-        }
-
-        // Check if the user that sent the command is in a voice channel
-        var userId = rawMessage.Author.Id;
-        var user = guild.Users.First(u => u.Id == rawMessage.Author.Id);
-        if (!user.VoiceState.HasValue)
-        {
-            throw new DiscordCommandException("The user must be in a voice channel to use this command");
-        }
-        
-        // Join the voice channel
-        var result = await _audioService.JoinAsync<LavalinkPlayer>(user.Guild.Id, user.VoiceChannel.Id);
-        if (result == null)
-        {
-            throw new Exception("Unable to join voice channel. Who knows why pepehands");
-        }
-
-        return result;
-    }
 }

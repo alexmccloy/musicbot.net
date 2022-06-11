@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Amccloy.MusicBot.Net.Dbo;
 using Amccloy.MusicBot.Net.Model;
 using Amccloy.MusicBot.Net.Utils.RX;
 using Microsoft.EntityFrameworkCore;
 
-namespace Amccloy.MusicBot.Net.Trivia;
+namespace Amccloy.MusicBot.Net.Trivia.TextTrivia;
 
 public class SqlTriviaQuestionProvider : ITriviaQuestionProvider
 {

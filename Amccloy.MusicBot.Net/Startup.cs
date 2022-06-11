@@ -3,6 +3,7 @@ using Amccloy.MusicBot.Net.Configuration;
 using Amccloy.MusicBot.Net.Discord;
 using Amccloy.MusicBot.Net.Model;
 using Amccloy.MusicBot.Net.Trivia;
+using Amccloy.MusicBot.Net.Trivia.TextTrivia;
 using Amccloy.MusicBot.Net.Utils;
 using Amccloy.MusicBot.Net.Utils.RX;
 using Discord;
@@ -65,6 +66,7 @@ namespace Amccloy.MusicBot.Net
             //Discord stuff
             services.AddSingleton<DiscordConnectionManager>()
                     .AddHostedService<CommandProcessingService>()
+                    .AddHostedService<DiscordAudioManager>()
                     .AddSingleton<IDiscordInterface, DiscordInterface>()
                     .AddSingleton(new DiscordSocketConfig()
                     {
@@ -84,7 +86,8 @@ namespace Amccloy.MusicBot.Net
                     .AddDiscordCommand<MusicCommand>()
                     .AddDiscordCommand<TriviaCommand>();
 
-            services.AddTriviaQuestionProvider<SqlTriviaQuestionProvider>();
+            services.AddTriviaQuestionProvider<SqlTriviaQuestionProvider>()
+                    .AddTriviaQuestionProvider<TestTriviaQuestionProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
