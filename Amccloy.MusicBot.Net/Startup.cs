@@ -5,7 +5,10 @@ using Amccloy.MusicBot.Net.Model;
 using Amccloy.MusicBot.Net.Trivia;
 using Amccloy.MusicBot.Net.Utils;
 using Amccloy.MusicBot.Net.Utils.RX;
+using Discord;
 using Discord.WebSocket;
+using Lavalink4NET;
+using Lavalink4NET.DiscordNet;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -47,14 +50,38 @@ namespace Amccloy.MusicBot.Net
             //General stuff
             services.AddSingleton<ISchedulerFactory, DefaultSchedulerFactory>();
             
+            // Lavalink stuff
+            var lavalinkConfig = Configuration.GetSection("Lavalink");
+            services.AddSingleton<IAudioService, LavalinkNode>()
+                    .AddSingleton<DiscordSocketClient>()
+                    .AddSingleton<IDiscordClientWrapper, DiscordClientWrapper>()
+                    .AddSingleton(new LavalinkNodeOptions()
+                    {
+                        RestUri = lavalinkConfig["RestUri"],
+                        WebSocketUri = lavalinkConfig["WebSocketUri"],
+                        Password = lavalinkConfig["Password"]
+                    }); 
+            
             //Discord stuff
             services.AddSingleton<DiscordConnectionManager>()
                     .AddHostedService<CommandProcessingService>()
-                    .AddSingleton<DiscordSocketClient>()
-                    .AddSingleton<IDiscordInterface, DiscordInterface>();
+                    .AddSingleton<IDiscordInterface, DiscordInterface>()
+                    .AddSingleton(new DiscordSocketConfig()
+                    {
+                        MessageCacheSize = 0,
+                        AlwaysDownloadUsers = true,
+
+                        GatewayIntents =
+                            GatewayIntents.Guilds |
+                            GatewayIntents.GuildMembers |
+                            GatewayIntents.GuildMessageReactions |
+                            GatewayIntents.GuildMessages |
+                            GatewayIntents.GuildVoiceStates
+                    });
 
             services.AddDiscordCommand<TestCommand>()
                     .AddDiscordCommand<RenameUserCommand>()
+                    .AddDiscordCommand<MusicCommand>()
                     .AddDiscordCommand<TriviaCommand>();
 
             services.AddTriviaQuestionProvider<SqlTriviaQuestionProvider>();

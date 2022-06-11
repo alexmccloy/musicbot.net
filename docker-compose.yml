@@ -2,14 +2,16 @@ version: "3.9"
 
 services:
   musicbot:
-    build: Amccloy.MusicBot.Net/
+    build: 
+      # Set the context to the root directory so that the dockerfile can copy in multiple directories
+      context: ./
+      dockerfile: ./Amccloy.MusicBot.Net/Dockerfile
     hostname: musicbot
     environment:
       MUSICBOTNET_Discord__BotToken: ${TOKEN}
       MUSICBOTNET_Postgres__Password: ${PG_PASSWORD}
   
   postgres:
-#    image: postgres:latest
     build: postgres/
     hostname: postgres
     restart: always
@@ -21,6 +23,14 @@ services:
       - '55432:5432'
     volumes:
       - db:/var/lib/postgresql/data
+      
+  lavalink:
+    build: lavalink/
+    hostname: lavalink
+    restart: always
+    ports:
+      - '2333:2333' #TODO remove this when we are not debugging - this is just to run the app from the IDE
+    
         
 volumes: 
   db:

@@ -31,6 +31,7 @@ namespace Amccloy.MusicBot.Net.Discord
                 _socketMessageSubject.OnNext(message);
                 return Task.CompletedTask;
             };
+            
         }
 
         public IObservable<SocketMessage> MessageReceived => _socketMessageSubject.AsObservable();

@@ -1,10 +1,12 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Amccloy.MusicBot.Net.Commands;
 using Amccloy.MusicBot.Net.Configuration;
 using Amccloy.MusicBot.Net.Utils.RX;
 using Discord;
 using Discord.WebSocket;
+using Lavalink4NET;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using NLog;
@@ -18,13 +20,18 @@ namespace Amccloy.MusicBot.Net.Discord
         //TODO eventually turn these into a list
         private DiscordSocketClient _discordSocketClient;
         private readonly ISchedulerFactory _schedulerFactory;
+        private readonly IAudioService _audioService;
         private readonly DiscordOptions _discordOptions;
         private IDiscordInterface _discordInterface = null;
 
         public DiscordConnectionManager(ISchedulerFactory schedulerFactory,
-                                        IOptions<DiscordOptions> discordOptions)
+                                        IOptions<DiscordOptions> discordOptions,
+                                        IAudioService audioService,
+                                        DiscordSocketClient discordSocketClient)
         {
             _schedulerFactory = schedulerFactory;
+            _audioService = audioService;
+            _discordSocketClient = discordSocketClient;
             _discordOptions = discordOptions.Value;
         }
 
@@ -34,21 +41,6 @@ namespace Amccloy.MusicBot.Net.Discord
             if (_discordInterface == null)
             {
                 _logger.Info($"Setting up discord client");
-                _logger.Info($"SEcret token is {_discordOptions.BotToken}");
-
-                _discordSocketClient = new DiscordSocketClient(new DiscordSocketConfig
-                {
-                    MessageCacheSize = 0,
-                    AlwaysDownloadUsers = true,
-
-
-                    GatewayIntents =
-                        GatewayIntents.Guilds |
-                        GatewayIntents.GuildMembers |
-                        GatewayIntents.GuildMessageReactions |
-                        GatewayIntents.GuildMessages |
-                        GatewayIntents.GuildVoiceStates
-                });
 
                 _discordSocketClient.Log += message =>
                 {
@@ -63,10 +55,11 @@ namespace Amccloy.MusicBot.Net.Discord
 
                     return Task.CompletedTask;
                 };
-                _discordSocketClient.Ready += () =>
+                _discordSocketClient.Ready += async () =>
                 {
                     _logger.Info($"Discord client is ready");
-                    return Task.CompletedTask;
+
+                    await InitialiseAudioService();
                 };
 
                 _discordSocketClient.Disconnected += exception =>
@@ -86,6 +79,21 @@ namespace Amccloy.MusicBot.Net.Discord
             }
 
             return _discordInterface;
+        }
+
+        private async Task InitialiseAudioService()
+        {
+            _logger.Info("Starting Lavalink audio service");
+
+            try
+            {
+                await _audioService.InitializeAsync();
+                _logger.Info("Lavalink audio service initialised");
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, $"Error connecting to lavalink service: {e.Message}");
+            }
         }
     }
 
