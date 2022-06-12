@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ namespace Amccloy.MusicBot.Net.Discord
     public class DiscordInterface : IDiscordInterface
     {
         public DiscordSocketClient RawClient { get; }
+        public ulong GuildId { get; private set; } = default;
 
         private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
         private readonly Subject<SocketMessage> _socketMessageSubject = new();
@@ -31,7 +33,12 @@ namespace Amccloy.MusicBot.Net.Discord
                 _socketMessageSubject.OnNext(message);
                 return Task.CompletedTask;
             };
-            
+
+            discordClient.Connected += () =>
+            {
+                GuildId = RawClient.Guilds.First().Id;
+                return Task.CompletedTask;
+            };
         }
 
         public IObservable<SocketMessage> MessageReceived => _socketMessageSubject.AsObservable();
@@ -48,5 +55,7 @@ namespace Amccloy.MusicBot.Net.Discord
                 _logger.Error(exception, $"Error occured while trying to send message: {exception.Message}");
             }
         }
+        
+        public SocketUser GetUser(ulong id) => RawClient.GetUser(id);
     }
 }

@@ -6,6 +6,7 @@ using Amccloy.MusicBot.Net.Commands;
 using Lavalink4NET;
 using Lavalink4NET.Player;
 using Microsoft.Extensions.Hosting;
+using NLog;
 
 namespace Amccloy.MusicBot.Net.Discord;
 
@@ -17,6 +18,8 @@ public class DiscordAudioManager : BackgroundService
     private static IDiscordInterface _discordInterface;
     private static IAudioService _audioService;
     private readonly IHostApplicationLifetime _applicationLifetime;
+
+    private ILogger _logger = LogManager.GetCurrentClassLogger();
 
     public DiscordAudioManager(IDiscordInterface discordInterface, 
                                IAudioService audioService, 
@@ -34,6 +37,39 @@ public class DiscordAudioManager : BackgroundService
             _audioService.Dispose();
             _discordInterface.RawClient.Dispose();
         });
+
+        //TODO swap this to trace
+        if (_logger.IsTraceEnabled)
+        {
+            _audioService.TrackStarted += (sender, args) =>
+            {
+                _logger.Trace($"Track started: {args.Player.CurrentTrack?.Title}");
+                return Task.CompletedTask;
+            };
+            
+            _audioService.TrackEnd += (sender, args) =>
+            {
+                _logger.Trace($"Track ended: {args.Player.CurrentTrack?.Title}");
+                return Task.CompletedTask;
+            };
+            
+            _audioService.TrackStuck += (sender, args) =>
+            {
+                _logger.Trace($"Track stuck: {args.Player.CurrentTrack?.Title}");
+                return Task.CompletedTask;
+            };
+
+            _discordInterface.RawClient.UserVoiceStateUpdated += (user, oldState, newState) =>
+            {
+                _logger.Trace($"Voice state changed from {oldState} to {newState}");
+                return Task.CompletedTask;
+            };
+        }
+        _audioService.TrackException += (sender, args) =>
+        {
+            _logger.Error($"Track exception: {args.Player.CurrentTrack?.Title}. Message: {args.ErrorMessage}");
+            return Task.CompletedTask;
+        };
         
         return Task.CompletedTask;
     }
@@ -45,7 +81,7 @@ public class DiscordAudioManager : BackgroundService
     public static async Task<LavalinkPlayer> GetPlayer(ulong authorId)
     {
         var guild = _discordInterface.RawClient.Guilds.First();
-        var player = _audioService.GetPlayer<LavalinkPlayer>(guild.ApplicationId ?? default);
+        var player = _audioService.GetPlayer<LavalinkPlayer>(_discordInterface.GuildId);
 
         // Check if the player already exists and is connected
         if (player != null && player.State != PlayerState.NotConnected && player.State != PlayerState.Destroyed)
@@ -53,7 +89,8 @@ public class DiscordAudioManager : BackgroundService
             return player;
         }
 
-        // Check if the user that sent the command is in a voice channel
+        // Check if the user that sent the command is in a voice channel. We need to do awkward things here to get the
+        // guild user rather than the user to check if they are in a voice channel
         var userId = authorId;
         var user = guild.Users.First(u => u.Id == authorId);
         if (!user.VoiceState.HasValue)

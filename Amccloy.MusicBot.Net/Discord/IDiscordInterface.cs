@@ -10,6 +10,10 @@ namespace Amccloy.MusicBot.Net.Discord
         public Task SendMessageAsync(ISocketMessageChannel channel, string message);
 
         public DiscordSocketClient RawClient { get; }
+        
+        public ulong GuildId { get; }
+
+        public SocketUser GetUser(ulong id);
 
     }
 }

@@ -67,7 +67,7 @@ public class MusicTriviaQuestion : IMusicTriviaQuestion, IDisposable
         // Start playing the song
         var track = await _audioService.GetTrackAsync($"{Song.Artist} {Song.Name}", SearchMode.YouTube)
                  ?? throw new DiscordCommandException($"Cannot find track {Song.Artist}-{Song.Name} on youtube");
-        await musicPlayer.PlayAsync(track);
+        await musicPlayer.PlayAsync(track, endTime:maxDuration);
         
         // Phase 1 - either we time out or someone get the answer right
         var answerFound = await tcs.Task;
@@ -80,7 +80,7 @@ public class MusicTriviaQuestion : IMusicTriviaQuestion, IDisposable
         }
         
         // Stop playing the song
-        await musicPlayer.StopAsync();
+        // await musicPlayer.StopAsync(disconnect:false);
 
         return result;
     }

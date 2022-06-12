@@ -61,7 +61,8 @@ namespace Amccloy.MusicBot.Net
                     {
                         RestUri = lavalinkConfig["RestUri"],
                         WebSocketUri = lavalinkConfig["WebSocketUri"],
-                        Password = lavalinkConfig["Password"]
+                        Password = lavalinkConfig["Password"],
+                        DisconnectOnStop = false,
                     }); 
             
             //Discord stuff
@@ -85,7 +86,8 @@ namespace Amccloy.MusicBot.Net
             services.AddDiscordCommand<TestCommand>()
                     .AddDiscordCommand<RenameUserCommand>()
                     .AddDiscordCommand<MusicCommand>()
-                    .AddDiscordCommand<TriviaCommand>();
+                    .AddDiscordCommand<TriviaCommand>()
+                    .AddDiscordCommand<MusicTriviaCommand>();
 
             services.AddTriviaQuestionProvider<SqlTriviaQuestionProvider>()
                     .AddTriviaQuestionProvider<TestTriviaQuestionProvider>();

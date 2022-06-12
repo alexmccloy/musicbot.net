@@ -71,7 +71,7 @@ public class MusicCommand : BaseDiscordCommand
             var track = await _audioService.GetTrackAsync(query, SearchMode.YouTube) 
                      ?? throw new DiscordCommandException("Search returned no results");
 
-            await player.PlayAsync(track, noReplace: true);
+            await player.PlayAsync(track);
 
         }
         catch (DiscordCommandException e)
@@ -92,7 +92,7 @@ public class MusicCommand : BaseDiscordCommand
                 return;
             }
 
-            await player.StopAsync(disconnect:true);
+            await player.StopAsync();
         }
         catch (DiscordCommandException e)
         {
