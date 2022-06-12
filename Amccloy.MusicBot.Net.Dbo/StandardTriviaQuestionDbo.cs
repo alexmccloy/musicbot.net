@@ -1,6 +1,4 @@
-﻿using TriviaImporter;
-
-namespace Amccloy.MusicBot.Net.Dbo;
+﻿namespace Amccloy.MusicBot.Net.Dbo;
 
 public class StandardTriviaQuestionDbo
 {

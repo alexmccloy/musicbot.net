@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Amccloy.MusicBot.Net.Dbo;
 using Amccloy.MusicBot.Net.Discord;
 using Lavalink4NET.Player;
 

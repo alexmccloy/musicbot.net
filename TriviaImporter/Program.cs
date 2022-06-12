@@ -1,5 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using Amccloy.MusicBot.Net.Dbo;
+
 namespace TriviaImporter;
 
 public class Program
@@ -14,6 +16,10 @@ public class Program
             {
                 Console.WriteLine(source.ToString());
             }
+            foreach (var source in Enum.GetValues<MusicTriviaSource>())
+            {
+                Console.WriteLine(source.ToString());
+            }
             Environment.Exit(1);
         }
         
@@ -22,15 +28,30 @@ public class Program
         string dbPassword = Console.ReadLine() ?? throw new Exception("Password cannot be null");
         
         // Determine which mode we are running in
-        switch (Enum.Parse<TriviaSource>(args[0]))
+
+        if (Enum.TryParse<TriviaSource>(args[0], out var triviaSource))
         {
-            case TriviaSource.OpenTriviaDatabase:
-                var importer = new OpenTriviaDatabaseImporter(dbPassword);
-                await importer.Execute();
-                break;
-            default:
-                Console.WriteLine("Error cannot parse database type");
-                break;
+            switch (triviaSource)
+            {
+                case TriviaSource.OpenTriviaDatabase:
+                    var importer = new OpenTriviaDatabaseImporter(dbPassword);
+                    await importer.Execute();
+                    break;
+            }
+        }
+        else if (Enum.TryParse<MusicTriviaSource>(args[0], out var musicTriviaSource))
+        {
+            switch (musicTriviaSource)
+            {
+                case MusicTriviaSource.OldMusicBot:
+                    var importer = new OldMusicBotDatabaseImporter(dbPassword);
+                    await importer.Execute();
+                    break;
+            }
+        }
+        else
+        {
+            Console.WriteLine("Cannot find matching importer");
         }
     }
 }

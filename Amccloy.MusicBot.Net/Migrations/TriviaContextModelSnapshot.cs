@@ -64,6 +64,35 @@ namespace Amccloy.MusicBot.Net.Migrations
                     b.ToTable("multi_choice_trivia_questions", "trivia_questions");
                 });
 
+            modelBuilder.Entity("Amccloy.MusicBot.Net.Dbo.MusicTriviaQuestionDbo", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Playlist")
+                        .HasColumnType("text")
+                        .HasColumnName("playlist");
+
+                    b.Property<int>("Source")
+                        .HasColumnType("integer")
+                        .HasColumnName("source");
+
+                    b.HasKey("Id")
+                        .HasName("pk_music_trivia_questions");
+
+                    b.HasIndex("Playlist")
+                        .HasDatabaseName("ix_music_trivia_questions_playlist");
+
+                    b.HasIndex("Source")
+                        .HasDatabaseName("ix_music_trivia_questions_source");
+
+                    b.ToTable("music_trivia_questions", "trivia_questions");
+                });
+
             modelBuilder.Entity("Amccloy.MusicBot.Net.Dbo.StandardTriviaQuestionDbo", b =>
                 {
                     b.Property<int>("Id")
@@ -99,6 +128,47 @@ namespace Amccloy.MusicBot.Net.Migrations
                         .HasDatabaseName("ix_standard_trivia_questions_source");
 
                     b.ToTable("standard_trivia_questions", "trivia_questions");
+                });
+
+            modelBuilder.Entity("Amccloy.MusicBot.Net.Dbo.MusicTriviaQuestionDbo", b =>
+                {
+                    b.OwnsOne("Amccloy.MusicBot.Net.Dbo.Song", "Song", b1 =>
+                        {
+                            b1.Property<int>("MusicTriviaQuestionDboId")
+                                .HasColumnType("integer")
+                                .HasColumnName("id");
+
+                            b1.Property<string>("Album")
+                                .HasColumnType("text")
+                                .HasColumnName("song_album");
+
+                            b1.Property<string>("Artist")
+                                .HasColumnType("text")
+                                .HasColumnName("song_artist");
+
+                            b1.Property<string>("Name")
+                                .IsRequired()
+                                .HasColumnType("text")
+                                .HasColumnName("song_name");
+
+                            b1.Property<string>("OriginalArtist")
+                                .HasColumnType("text")
+                                .HasColumnName("song_original_artist");
+
+                            b1.Property<string>("Year")
+                                .HasColumnType("text")
+                                .HasColumnName("song_year");
+
+                            b1.HasKey("MusicTriviaQuestionDboId");
+
+                            b1.ToTable("music_trivia_questions", "trivia_questions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("MusicTriviaQuestionDboId")
+                                .HasConstraintName("fk_music_trivia_questions_music_trivia_questions_id");
+                        });
+
+                    b.Navigation("Song");
                 });
 #pragma warning restore 612, 618
         }

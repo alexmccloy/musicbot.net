@@ -1,4 +1,4 @@
-﻿namespace TriviaImporter;
+﻿namespace Amccloy.MusicBot.Net.Dbo;
 
 public enum TriviaSource
 {

@@ -92,7 +92,8 @@ namespace Amccloy.MusicBot.Net
             services.AddTriviaQuestionProvider<SqlTriviaQuestionProvider>()
                     .AddTriviaQuestionProvider<TestTriviaQuestionProvider>();
 
-            services.AddMusicTriviaQuestionProvider<TestMusicTriviaQuestionProvider>();
+            services.AddMusicTriviaQuestionProvider<TestMusicTriviaQuestionProvider>()
+                    .AddMusicTriviaQuestionProvider<OldMusicBotSqlMusicTriviaQuestionProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

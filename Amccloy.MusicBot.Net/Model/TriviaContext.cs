@@ -11,6 +11,7 @@ public class TriviaContext : DbContext
     public const string SchemaName = "trivia_questions";
     public DbSet<StandardTriviaQuestionDbo> StandardTriviaQuestions { get; set; }
     public DbSet<MultiChoiceTriviaQuestionDbo> MultiChoiceTriviaQuestions { get; set; }
+    public DbSet<MusicTriviaQuestionDbo> MusicTriviaQuestions { get; set; }
 
     public TriviaContext(DbContextOptions<TriviaContext> options, IOptions<PostgresOptions> postgresOptions)
         : base(options)
@@ -40,5 +41,13 @@ public class TriviaContext : DbContext
                     .HasIndex(question => question.Category);
         modelBuilder.Entity<MultiChoiceTriviaQuestionDbo>()
                     .HasIndex(question => question.Source);
+        
+        modelBuilder.Entity<MusicTriviaQuestionDbo>()
+                    .HasIndex(question => question.Source);
+        modelBuilder.Entity<MusicTriviaQuestionDbo>()
+                    .HasIndex(question => question.Playlist);
+        // Flatten the song property within the db
+        modelBuilder.Entity<MusicTriviaQuestionDbo>()
+                    .OwnsOne(question => question.Song);
     }
 }

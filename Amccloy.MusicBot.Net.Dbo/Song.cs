@@ -1,7 +1,10 @@
-namespace Amccloy.MusicBot.Net.Trivia.MusicTrivia;
+using System.ComponentModel.DataAnnotations;
+
+namespace Amccloy.MusicBot.Net.Dbo;
 
 public record Song
 {
+    [Required]
     public string Name { get; set; }
     public string Artist { get; set; } //TODO should this become a list of artists or is that too complex?
     public string Album { get; set; }

@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Amccloy.MusicBot.Net.Commands;
+using Amccloy.MusicBot.Net.Dbo;
 using Amccloy.MusicBot.Net.Discord;
 using Amccloy.MusicBot.Net.Utils.RX;
 using Lavalink4NET;

@@ -26,7 +26,7 @@ public class MusicTriviaCommand : BaseDiscordCommand
     private string _fullHelpText;
 
     // Dictionary of <playlist name, trivia provider that contains that playlist>
-    private readonly Dictionary<string, IMusicTriviaQuestionProvider> _questionProviders = new();
+    private readonly Dictionary<string, IMusicTriviaQuestionProvider> _questionProviders = new(StringComparer.InvariantCultureIgnoreCase);
     private readonly IScheduler _scheduler;
     
     private CancellationTokenSource _gameInProgress = null;
@@ -201,9 +201,9 @@ public class MusicTriviaCommand : BaseDiscordCommand
         }
         
         // Find the specific playlist
-        if (_questionProviders.ContainsKey(args[1].ToLower()))
+        if (_questionProviders.ContainsKey(args[1]))
         {
-            return new string[] { args[1].ToLower() };
+            return new string[] { args[1] };
         }
         
         // We dont have the requested playlist

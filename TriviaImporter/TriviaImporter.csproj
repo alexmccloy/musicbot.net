@@ -17,4 +17,10 @@
       <PackageReference Include="Npgsql" Version="6.0.4" />
     </ItemGroup>
 
+    <ItemGroup>
+        <Content Include="MusicTriviaLists\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
 </Project>
