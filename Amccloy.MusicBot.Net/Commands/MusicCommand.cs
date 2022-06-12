@@ -31,7 +31,7 @@ public class MusicCommand : BaseDiscordCommand
         _audioService = audioService;
     }
 
-    protected override async Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage rawMessage)
+    protected override async Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage commandMessage)
     {
         if (args.Length == 1)
         {
@@ -45,10 +45,10 @@ public class MusicCommand : BaseDiscordCommand
         switch (args[1])
         {
             case "play":
-                await PlayTrack(args[2..], discordInterface, rawMessage);
+                await PlayTrack(args[2..], discordInterface, commandMessage);
                 break;
             case "stop":
-                await StopPlaying(discordInterface, rawMessage);
+                await StopPlaying(discordInterface, commandMessage);
                 break;
             default:
                 await SendMessage($"Unknown command: {args[1]}");
@@ -56,7 +56,7 @@ public class MusicCommand : BaseDiscordCommand
         }
         
         
-        async Task SendMessage(string message) => await discordInterface.SendMessageAsync(rawMessage.Channel, message);
+        async Task SendMessage(string message) => await discordInterface.SendMessageAsync(commandMessage.Channel, message);
     }
 
     private async Task PlayTrack(string[] searchTerms, IDiscordInterface discordInterface, SocketMessage rawMessage)

@@ -64,8 +64,8 @@ namespace Amccloy.MusicBot.Net.Commands
         /// </summary>
         /// <param name="discordInterface"></param>
         /// <param name="args"></param>
-        /// <param name="rawMessage"></param>
-        protected override async Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage rawMessage)
+        /// <param name="commandMessage"></param>
+        protected override async Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage commandMessage)
         {
             //TODO this should probably have a semaphore to make sure we dont get a race condition if lots of people spam to play
             
@@ -75,13 +75,13 @@ namespace Amccloy.MusicBot.Net.Commands
                 // Check if they have requested to stop
                 if (args.Contains("stop"))
                 {
-                    await discordInterface.SendMessageAsync(rawMessage.Channel, "Stopping trivia game due to someone requesting it be cancelled");
+                    await discordInterface.SendMessageAsync(commandMessage.Channel, "Stopping trivia game due to someone requesting it be cancelled");
                     _gameInProgress.Cancel();
                 }
                 else
                 {
                     // A game is already in progress so tell the user to leave
-                    await discordInterface.SendMessageAsync(rawMessage.Channel, $"A game is already in progress. Type '{CommandString} stop' to stop that game");
+                    await discordInterface.SendMessageAsync(commandMessage.Channel, $"A game is already in progress. Type '{CommandString} stop' to stop that game");
                 }
 
                 return;
@@ -90,7 +90,7 @@ namespace Amccloy.MusicBot.Net.Commands
             if (!TryExtractArgs(args, out var questionProvider, out var gameLength))
             {
                 // Command was used wrong, print usage info and exit
-                await discordInterface.SendMessageAsync(rawMessage.Channel, FullHelpText);
+                await discordInterface.SendMessageAsync(commandMessage.Channel, FullHelpText);
                 return;
             }
 
@@ -101,7 +101,7 @@ namespace Amccloy.MusicBot.Net.Commands
             
                 Subject<DiscordMessage> subject = new Subject<DiscordMessage>();
                 discordInterface.MessageReceived.ObserveOn(_scheduler)
-                                .Where(message => message.Channel.Id == rawMessage.Channel.Id)
+                                .Where(message => message.Channel.Id == commandMessage.Channel.Id)
                                 .Subscribe(message =>
                                 {
                                     subject.OnNext(new DiscordMessage(message.Channel, message.Author.Username, message.Content));
@@ -118,25 +118,25 @@ namespace Amccloy.MusicBot.Net.Commands
                         break;
                     }
                 
-                    await discordInterface.SendMessageAsync(rawMessage.Channel, $"Question {i + 1}:\n{questions[i].Question}");
+                    await discordInterface.SendMessageAsync(commandMessage.Channel, $"Question {i + 1}:\n{questions[i].Question}");
                     var result = await questions[i].ExecuteQuestion(subject.AsObservable(), questionProvider.QuestionDuration);
 
                     if (result.Scores.Count == 0)
                     {
                         // No one was correct
-                        await discordInterface.SendMessageAsync(rawMessage.Channel, $"No one was correct! Answer:\n{questions[i].Answer}");
+                        await discordInterface.SendMessageAsync(commandMessage.Channel, $"No one was correct! Answer:\n{questions[i].Answer}");
                     }
                     else
                     {
                         gameResult.CombineWith(result);
                         //Someone was correct
-                        await discordInterface.SendMessageAsync(rawMessage.Channel, $"{String.Join(", ", result.Scores.Where(score => score.Value > 0).Select(score => score.Key))} was correct!\n" +
+                        await discordInterface.SendMessageAsync(commandMessage.Channel, $"{String.Join(", ", result.Scores.Where(score => score.Value > 0).Select(score => score.Key))} was correct!\n" +
                                                                                     $"{gameResult.PrintScores()}");
                     }
                 }
             
                 // Game is over, inform everyone of the winner
-                await discordInterface.SendMessageAsync(rawMessage.Channel,
+                await discordInterface.SendMessageAsync(commandMessage.Channel,
                                                         $"Game over, winner was {gameResult.GetWinner()}\n" +
                                                         $"{gameResult.PrintScores()}");
             }

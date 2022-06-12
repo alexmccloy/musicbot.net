@@ -3,6 +3,7 @@ using Amccloy.MusicBot.Net.Configuration;
 using Amccloy.MusicBot.Net.Discord;
 using Amccloy.MusicBot.Net.Model;
 using Amccloy.MusicBot.Net.Trivia;
+using Amccloy.MusicBot.Net.Trivia.MusicTrivia;
 using Amccloy.MusicBot.Net.Trivia.TextTrivia;
 using Amccloy.MusicBot.Net.Utils;
 using Amccloy.MusicBot.Net.Utils.RX;
@@ -88,6 +89,8 @@ namespace Amccloy.MusicBot.Net
 
             services.AddTriviaQuestionProvider<SqlTriviaQuestionProvider>()
                     .AddTriviaQuestionProvider<TestTriviaQuestionProvider>();
+
+            services.AddMusicTriviaQuestionProvider<TestMusicTriviaQuestionProvider>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

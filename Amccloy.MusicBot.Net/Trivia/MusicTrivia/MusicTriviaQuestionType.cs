@@ -11,4 +11,9 @@ public enum MusicTriviaQuestionType
     /// For questions that are cover song. Guess the artist, song name, and original artist
     /// </summary>
     Cover,
+    
+    /// <summary>
+    /// TV Movies and Video game theme songs
+    /// </summary>
+    ThemeSong
 }

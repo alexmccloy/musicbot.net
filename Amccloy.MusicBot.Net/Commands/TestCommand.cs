@@ -21,20 +21,20 @@ namespace Amccloy.MusicBot.Net.Commands
         {
         }
 
-        protected override async Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage rawMessage)
+        protected override async Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage commandMessage)
         {
             var response = new StringBuilder();
 
             response.AppendLine("Test command:");
-            response.AppendLine($"From User: {rawMessage.Author.Username}");
-            response.AppendLine($"Channel: {rawMessage.Channel.Name}");
+            response.AppendLine($"From User: {commandMessage.Author.Username}");
+            response.AppendLine($"Channel: {commandMessage.Channel.Name}");
 
             for (int i = 0; i < args.Length; i++)
             {
                 response.AppendLine($"Arg{i}: {args[i]}");
             }
             
-            await discordInterface.SendMessageAsync(rawMessage.Channel, response.ToString());
+            await discordInterface.SendMessageAsync(commandMessage.Channel, response.ToString());
         }
 
     }

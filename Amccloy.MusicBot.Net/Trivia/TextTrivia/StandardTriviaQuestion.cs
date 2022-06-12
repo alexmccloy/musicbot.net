@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading;
@@ -103,11 +104,29 @@ namespace Amccloy.MusicBot.Net.Trivia.TextTrivia
         /// Determines if the answer from the user is correct.
         /// Non-case sensitive, white space is stripped.
         /// </summary>
-        private bool IsAnswerCorrect(string answer)
+        private bool IsAnswerCorrect(string guess)
         {
-            answer = answer.ToLower().Trim();
+            // Format answer and guess in the same way
+            var formattedAnswer = SplitGuess(_parsedAnswer);
+            var formattedGuess = SplitGuess(guess);
 
-            return answer == _parsedAnswer;
+            return formattedAnswer.SequenceEqual(formattedGuess);
+        }
+
+        private string[] SplitGuess(string guess)
+        {
+            string[] uselessWords = {"the", "a"};
+            
+            // Split into words lower case
+            var split = guess.Trim().ToLower().Split(' ');
+            
+            // Remove blanks
+            var split2 = split.Where(s => !string.IsNullOrWhiteSpace(s));
+            
+            // Remove useless words
+            split2 = split2.Where(s => !uselessWords.Contains(s));
+
+            return split2.ToArray();
         }
 
         public void Dispose()

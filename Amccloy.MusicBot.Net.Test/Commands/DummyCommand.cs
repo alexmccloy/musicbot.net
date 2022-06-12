@@ -23,7 +23,7 @@ namespace Amccloy.MusicBot.Net.Test.Commands
         {
         }
 
-        protected override Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage rawMessage)
+        protected override Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage commandMessage)
         {
             ExecuteCount++;
             return Task.CompletedTask;

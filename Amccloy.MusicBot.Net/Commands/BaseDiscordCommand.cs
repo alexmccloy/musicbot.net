@@ -68,9 +68,9 @@ namespace Amccloy.MusicBot.Net.Commands
         /// </summary>
         /// <param name="discordInterface"></param>
         /// <param name="args"></param>
-        /// <param name="rawMessage"></param>
+        /// <param name="commandMessage"></param>
         /// <returns></returns>
-        protected abstract Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage rawMessage);
+        protected abstract Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage commandMessage);
 
         /// <summary>
         /// Perform any initialisation required here

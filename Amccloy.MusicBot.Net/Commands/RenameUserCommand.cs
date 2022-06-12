@@ -29,7 +29,7 @@ namespace Amccloy.MusicBot.Net.Commands
         {
         }
 
-        protected override async Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage rawMessage)
+        protected override async Task Execute(IDiscordInterface discordInterface, string[] args, SocketMessage commandMessage)
         {
             // Get the current username. This can be either the current nickname, or the discord username, or the discord user id (if it is an integer)
             // Can also be surround in quotes fuck my life
@@ -92,7 +92,7 @@ namespace Amccloy.MusicBot.Net.Commands
                 //TODO log this bad boy
             }
 
-            async Task SendMessage(string message) => await discordInterface.SendMessageAsync(rawMessage.Channel, message);
+            async Task SendMessage(string message) => await discordInterface.SendMessageAsync(commandMessage.Channel, message);
         }
         
     }
