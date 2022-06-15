@@ -138,7 +138,7 @@ public class MusicTriviaCommand : BaseDiscordCommand
 
                 var question = questions[i];
 
-                await SendMessage($"Question {i}:\n{question.Instruction}");
+                await SendMessage($"Question {i+1}:\n{question.Instruction}");
                 var result = await question.ExecuteQuestion(discordChatLog.AsObservable(),
                                                             _questionProviders[playlist].QuestionDuration,
                                                             musicPlayer);

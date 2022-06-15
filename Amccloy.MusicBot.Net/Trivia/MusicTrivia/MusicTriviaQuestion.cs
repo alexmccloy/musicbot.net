@@ -11,6 +11,7 @@ using Amccloy.MusicBot.Net.Utils.RX;
 using Lavalink4NET;
 using Lavalink4NET.Player;
 using Lavalink4NET.Rest;
+using NLog;
 
 namespace Amccloy.MusicBot.Net.Trivia.MusicTrivia;
 
@@ -18,6 +19,8 @@ public class MusicTriviaQuestion : IMusicTriviaQuestion, IDisposable
 {
     private readonly ISchedulerFactory _schedulerFactory;
     private readonly IAudioService _audioService;
+
+    private readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
     public MusicTriviaQuestionType QuestionType => MusicTriviaQuestionType.Standard;
     public string Instruction => "Guess the Artist and the Song Name";
@@ -40,7 +43,10 @@ public class MusicTriviaQuestion : IMusicTriviaQuestion, IDisposable
         var result = new GameResults();
         var tcs = new TaskCompletionSource<bool>(); // True if someone was right, false if we timed out
         var cancellationTokenSource = new CancellationTokenSource(maxDuration);
-        cancellationTokenSource.Token.Register(() => tcs.TrySetResult(false));
+        cancellationTokenSource.Token.Register(() =>
+        {
+            tcs.TrySetResult(false);
+        });
         
 
         bool phase1 = true; // When this is true the round ends when the first person gets the question right,
@@ -59,14 +65,15 @@ public class MusicTriviaQuestion : IMusicTriviaQuestion, IDisposable
                                     if (phase1)
                                     {
                                         //Continue to phase 2
-                                        cancellationTokenSource.Cancel();
+                                        phase1 = false;
+                                        cancellationTokenSource.Dispose();
                                         tcs.TrySetResult(true);
                                     }
                                 }
                             });
         
         // Start playing the song
-        var track = await _audioService.GetTrackAsync($"{Song.Artist} {Song.Name}", SearchMode.YouTube)
+        var track = await _audioService.GetTrackAsync($"{Song.Artist} {Song.Name} lyric video", SearchMode.YouTube)
                  ?? throw new DiscordCommandException($"Cannot find track {Song.Artist}-{Song.Name} on youtube");
         await musicPlayer.PlayAsync(track, endTime:maxDuration);
         
@@ -77,7 +84,7 @@ public class MusicTriviaQuestion : IMusicTriviaQuestion, IDisposable
         {
             // Phase 2 - 1 second grace period to account for lag when multiple people get the answer right
             phase1 = false;
-            await Task.Delay(TimeSpan.FromSeconds(1));
+            await Task.Delay(TimeSpan.FromSeconds(3));
         }
         
         // Stop playing the song
